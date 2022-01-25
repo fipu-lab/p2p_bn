@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+opencv-python = "*"
+tensorflow = "==2.5.0"
+tensorflow-gpu = "==2.5.0"
+tensorflow-federated = "0.19.0"
+tensorflow-addons = "0.15.0"
+matplotlib = "*"
+tensorflow-privacy = "0.5.2"
+nltk = "3.5"
+GPUtil = "*"
+psutil = "*"
+networkx = "*"
+python-dotenv = "*"
+tqdm = "*"
+fastcluster = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
