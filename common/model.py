@@ -14,7 +14,7 @@ from tensorflow.keras.models import clone_model
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.callbacks import EarlyStopping
 
-from .metrics import MaskedSparseCategoricalAccuracy, MaskedSparseF1Score, MaskedSparsePrecision, MaskedSparseRecall
+from common.metrics import MaskedSparseCategoricalAccuracy, MaskedSparseF1Score, MaskedSparsePrecision, MaskedSparseRecall
 from tensorflow.keras.metrics import Recall
 # from tensorflow.python.framework.ops import disable_eager_execution
 # disable_eager_execution()

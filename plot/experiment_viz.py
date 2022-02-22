@@ -1,5 +1,6 @@
-from plot.visualize import side_by_side, show, plot_graph, resolve_timeline, parse_timeline
+from plot.visualize import side_by_side, show, plot_graph, resolve_timeline, parse_timeline, read_json
 from scipy.stats import mannwhitneyu
+import numpy as np
 
 ALG_NAME = 'P2P-BN'
 
@@ -531,6 +532,33 @@ def bn_ft_significance():
     names = list(viz.keys())
     for i in range(half_len):
         print(names[i], "<->", names[i+half_len], mannwhitneyu(accs[i][20:81], accs[i+half_len][20:]))
+
+
+def independent_acc():
+    viz = {
+            'agents': [
+                'experiment_2/indp/P2PAgent_100A_100E_50B_4V_21-02-2022_21_20',
+                'experiment_2/indp/P2PAgent_100A_100E_50B_4V_22-02-2022_00_01',
+                'experiment_2/indp/P2PAgent_100A_100E_50B_4V_22-02-2022_03_13',
+            ],
+            'single': [
+                'experiment_2/indp/Single_100A_100E_50B_4V_22-02-2022_11_44',
+                'experiment_2/indp/Single_100A_100E_50B_4V_22-02-2022_12_26',
+                'experiment_2/indp/Single_100A_100E_50B_4V_22-02-2022_13_17',
+            ]
+        }
+
+    for k, v in viz.items():
+        max_acc = []
+        for filename in v:
+            data = read_json(filename)['agents']
+            if isinstance(data, list):
+                data = np.array(data)
+                m_ac = [max(data[:, i]) for i in range(data.shape[1])]
+            else:
+                m_ac = [max(data[key]['test_model-accuracy_no_oov']) for key in data.keys()]
+            max_acc.append(m_ac)
+        print(k, "{:.3%}".format(np.average(max_acc)))
 
 
 if __name__ == '__main__':
