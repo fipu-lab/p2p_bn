@@ -3,6 +3,7 @@ from scipy.spatial.distance import pdist, squareform
 from fastcluster import linkage
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import string
 
 from plot.visualize import read_json
 
@@ -100,6 +101,7 @@ def plot_colormeshes(m_names_dict, method=None, normalize=True, fig_size=(6.4, 4
     for ax, color_mesh, title in zip(axs, color_meshes, list(m_names_dict.keys())):
         pcm = ax.pcolormesh(color_mesh, vmin=v_min, vmax=v_max)
         ax.set_title(title)
+        ax.set_xlabel(string.ascii_lowercase[ax.get_subplotspec().colspan.start] + ")")
 
     # fig.colorbar(pcm, cax=fig.add_axes([0.9, 0.1, 0.03, 0.8]))
     fig.colorbar(pcm)
@@ -107,7 +109,7 @@ def plot_colormeshes(m_names_dict, method=None, normalize=True, fig_size=(6.4, 4
     fig.set_figheight(fig_size[1])
     plt.tight_layout(pad=0, h_pad=1, w_pad=1)
     plt.show()
-    print(fig.get_figwidth(), fig.get_figheight())
+    # print(fig.get_figwidth(), fig.get_figheight())
 
 
 def plot_json_matrix(filename, method=None):

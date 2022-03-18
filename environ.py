@@ -60,6 +60,7 @@ def set_visible_devices(devices):
         devices.append('GPU:{}'.format(dev_i))
 
     os.environ['DEVICES'] = ', '.join(devices)
+    os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 
 def check_devices():

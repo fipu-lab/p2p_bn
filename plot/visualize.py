@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter, MultipleLocator
 import numpy as np
+import string
 import json
 
 LABELS = {
@@ -142,12 +143,13 @@ def plot_items(ax, x_axis, viz_dict, title=None, agg_fn=np.average):
             ax2.xaxis.set_major_formatter(FuncFormatter(human_format))
             ax2.set_xlabel(LABELS[x_axis2])
 
-    ax.set_xlabel(LABELS[x_axis])
+    ax.set_xlabel(LABELS[x_axis] + "\n" + string.ascii_lowercase[ax.get_subplotspec().colspan.start] + ")")
     ax.xaxis.set_major_formatter(FuncFormatter(human_format))
     ax.set_ylabel('Test UA (%)')
     ax.grid()
     ax.legend(legend, loc='lower right')
     ax.yaxis.set_major_locator(MultipleLocator())
+    # ax.text(0.5, -.5, string.ascii_lowercase[ax.get_subplotspec().colspan.start] + ")")
     if title:
         ax.set_title(title)
 
