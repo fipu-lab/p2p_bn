@@ -143,7 +143,7 @@ def plot_items(ax, x_axis, viz_dict, title=None, agg_fn=np.average):
             ax2.xaxis.set_major_formatter(FuncFormatter(human_format))
             ax2.set_xlabel(LABELS[x_axis2])
 
-    ax.set_xlabel(LABELS[x_axis] + "\n" + string.ascii_lowercase[ax.get_subplotspec().colspan.start] + ")")
+    ax.set_xlabel(LABELS[x_axis] + "\n" + string.ascii_lowercase[ax.get_subplotspec().num1] + ")")
     ax.xaxis.set_major_formatter(FuncFormatter(human_format))
     ax.set_ylabel('Test UA (%)')
     ax.grid()

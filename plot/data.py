@@ -89,8 +89,9 @@ def plot_colormesh(matrix, method=None):
     plt.show()
 
 
-def plot_colormeshes(m_names_dict, method=None, normalize=True, fig_size=(6.4, 4.8)):
-    fig, axs = plt.subplots(1, len(m_names_dict))
+def plot_colormeshes(m_names_dict, method=None, normalize=True, fig_size=(6.4, 4.8), n_rows=1):
+    fig, axs = plt.subplots(n_rows, int(len(m_names_dict) / n_rows))
+    axs = axs.flatten()
     if len(m_names_dict) < 2:
         axs = [axs]
     color_meshes = [create_colormesh(read_symmetric_matrix(filename), method) for filename in m_names_dict.values()]
@@ -101,13 +102,16 @@ def plot_colormeshes(m_names_dict, method=None, normalize=True, fig_size=(6.4, 4
     for ax, color_mesh, title in zip(axs, color_meshes, list(m_names_dict.keys())):
         pcm = ax.pcolormesh(color_mesh, vmin=v_min, vmax=v_max)
         ax.set_title(title)
-        ax.set_xlabel(string.ascii_lowercase[ax.get_subplotspec().colspan.start] + ")")
+        ax.set_xlabel(string.ascii_lowercase[ax.get_subplotspec().num1] + ")")
 
     # fig.colorbar(pcm, cax=fig.add_axes([0.9, 0.1, 0.03, 0.8]))
-    fig.colorbar(pcm)
-    fig.set_figwidth(fig_size[0])
-    fig.set_figheight(fig_size[1])
-    plt.tight_layout(pad=0, h_pad=1, w_pad=1)
+    # fig.colorbar(pcm, ax=axs, location='bottom')
+    plt.colorbar(pcm, cax=fig.add_axes([0.9, 0.088, 0.03, 0.865]))
+
+    if fig_size is not None:
+        fig.set_figwidth(fig_size[0])
+        fig.set_figheight(fig_size[1])
+    plt.tight_layout(pad=0, h_pad=1, w_pad=1, rect=(0, 0, 0.88, 1))
     plt.show()
     # print(fig.get_figwidth(), fig.get_figheight())
 
@@ -127,5 +131,5 @@ if __name__ == '__main__':
         'MNIST (pathological non-IID)': 'data/mnist_pathological-non-iid_100_clients',
         'MNIST (practical non-IID)': 'data/mnist_practical-non-iid_100_clients',
         'Reddit': 'data/reddit_100_clients',
-    }, 'complete', fig_size=(6.4*2, 4.8/2))
+    }, 'complete', fig_size=(6.4, 4.8), n_rows=2)
     # """

@@ -153,7 +153,7 @@ def plot_experiment_1():
                     ],
                 },
             },
-        }, fig_size=(12, 12 / 3.75))
+        }, fig_size=(12/2, 12 / 3.75*2), n_rows=2)
 
 
 def plot_experiment_1_graph():
@@ -328,7 +328,7 @@ def plot_experiment_2():
                 ]
             }
         },
-    }, fig_size=(12, 12 / 3.75))
+    }, fig_size=(12 / 2, 12 / 3.75 * 2), n_rows=2)
 
 
 def exp_1_avg_msg_acc():
@@ -835,4 +835,4 @@ def independent_acc():
 
 
 if __name__ == '__main__':
-    plot_experiment_3()
+    plot_experiment_2_graph()
