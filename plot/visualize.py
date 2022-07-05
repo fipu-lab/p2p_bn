@@ -115,18 +115,21 @@ def calc_fill_between(accs):
     return min_vals, max_vals
 
 
-def plot_items(ax, x_axis, viz_dict, title=None, agg_fn=np.average):
+def plot_items(ax, x_axis, viz_dict, title=None, colors=None, agg_fn=np.average):
     legend = []
     x_axis2 = None
     if isinstance(x_axis, list):
         x_axis, x_axis2 = x_axis
 
-    for k, v in viz_dict.items():
+    for i, (k, v) in enumerate(viz_dict.items()):
         x_time, t_acc, accs = parse_timeline(k, v, x_axis, agg_fn)
-        ax.plot(x_time, t_acc)
+        args = {}
+        if colors is not None:
+            args['color'] = colors[i]
+        ax.plot(x_time, t_acc, **args)
         if accs is not None:
             min_acc, max_acc = calc_fill_between(accs)
-            ax.fill_between(x_time, max_acc, min_acc,  alpha=0.2)
+            ax.fill_between(x_time, max_acc, min_acc, alpha=0.1, **args)
         legend.append(k)
         if x_axis2 is not None:
             x_time2, t_acc2, accs2 = parse_timeline(k, v, x_axis2, agg_fn)
@@ -143,11 +146,15 @@ def plot_items(ax, x_axis, viz_dict, title=None, agg_fn=np.average):
             ax2.xaxis.set_major_formatter(FuncFormatter(human_format))
             ax2.set_xlabel(LABELS[x_axis2])
 
-    ax.set_xlabel(LABELS[x_axis] + "\n" + string.ascii_lowercase[ax.get_subplotspec().num1] + ")")
+    gs = ax.get_subplotspec().get_gridspec()
+    if gs.ncols * gs.nrows > 1:
+        ax.set_xlabel(LABELS[x_axis] + "\n" + string.ascii_lowercase[ax.get_subplotspec().num1] + ")")
+    else:
+        ax.set_xlabel(LABELS[x_axis])
     ax.xaxis.set_major_formatter(FuncFormatter(human_format))
     ax.set_ylabel('Test UA (%)')
     ax.grid()
-    ax.legend(legend, loc='lower right')
+    ax.legend(legend) # , loc='lower right')
     ax.yaxis.set_major_locator(MultipleLocator())
     # ax.text(0.5, -.5, string.ascii_lowercase[ax.get_subplotspec().colspan.start] + ")")
     if title:
@@ -170,7 +177,7 @@ def side_by_side(viz_dict, agg_fn=np.average, fig_size=(10, 5), n_rows=1):
         axs = np.array([axs])
     axs = axs.flatten()
     for ax, (plot_k, plot_v) in zip(axs, viz_dict.items()):
-        plot_items(ax, plot_v['x_axis'], plot_v['viz'], plot_k, agg_fn)
+        plot_items(ax, plot_v['x_axis'], plot_v['viz'], plot_k, plot_v.get('colors', None), agg_fn)
     max_y = round(max([ax.get_ylim()[1] for ax in axs]))
     for ax in axs:
         ax.set_ylim([0, max_y])
@@ -206,20 +213,6 @@ def plot_graph(viz_dict, fig_size=(10, 5), n_rows=1, node_size=300):
 
 if __name__ == '__main__':
     show({
-        'decay(0.0045) - 100': 'experiment_3/decaying_45_P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_22-12-2021_12_41',
-        'decay(0.009) - 100': 'experiment_3/decaying_9_P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_22-12-2021_16_06',
-        'decay - 100': 'experiment_3/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_14-12-2021_00_22',
-
-        # 'fixed - 500': 'experiment_3/old_P2PAgent_500A_100E_50B_4V_sparse(directed)_N500_NB3_TV-1_04-12-2021_16_20',
-        # 'decaying': 'experiment_3/P2PAgent_500A_100E_50B_4V_sparse(directed)_N500_NB3_TV-1_14-12-2021_15_37',
-        # 'fixed-1000': 'experiment_3/old_P2PAgent_1000A_100E_50B_4V_sparse(directed)_N1000_NB3_TV-1_09-12-2021_04_28',
-        # 'decay-1000': 'experiment_3/P2PAgent_1000A_100E_50B_4V_sparse(directed)_N1000_NB3_TV-1_19-12-2021_16_30',
-        # 'Fixed-100': 'experiment_2/fixed/directed/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_29-11-2021_20_59',
-        # 'Decaying-100': 'P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_10-12-2021_21_37',
-        # 'Fix(0.99)-100': 'P2PAgent_100A_99E_50B_4V_sparse(directed)_N100_NB3_TV-1_12-12-2021_22_24',
-        # 'Fixed-500': 'experiment_3/P2PAgent_500A_100E_50B_4V_sparse(directed)_N500_NB3_TV-1_04-12-2021_16_20',
-        # 'FL-500': 'experiment_3/fl_500C_10TR_2V(0_005S-0_005C)_100E_num_examples_06-12-2021_12_24',
-        # 'Decaying-500': 'P2PAgent_500A_100E_50B_4V_sparse(directed)_N500_NB3_TV-1_11-12-2021_16_03',
 
     },
         x_axises=['epoch'],
