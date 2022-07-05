@@ -24,7 +24,9 @@ class SGPPushSumAgent(SyncAgent):
         super(SGPPushSumAgent, self).__init__(**kwargs)
 
         self.w = 1
-        self.msg_q = []
+        # self.msg_q = []
+        self.model_q = None
+        self.w_q = 0
         self.make_train_iter()
 
     def train_fn(self):
@@ -52,17 +54,27 @@ class SGPPushSumAgent(SyncAgent):
         wji = self.graph.get_edge_weight(other_agent.id, self.id)
 
         # Append message to queue to process later
-        self.msg_q.append(
-            Msg(x=tf.nest.map_structure(lambda o: o * wji, other_agent.get_model_weights()), w=self.w * wji))
+        # self.msg_q.append(Msg(x=tf.nest.map_structure(lambda o: o * wji, other_agent.get_model_weights()), w=self.w * wji))
+        x = tf.nest.map_structure(lambda o: o * wji, other_agent.get_model_weights())
+        w = self.w * wji
+        if self.model_q is None:
+            self.model_q = x
+        else:
+            self.model_q = tf.nest.map_structure(lambda i, j: i + j, self.model_q, x)
+        self.w_q += w
 
     def sync_parameters(self):
         # Agent must have "connection with itself"
         wii = self.graph.get_edge_weight(self.id, self.id)
         x = tf.nest.map_structure(lambda w: w * wii, self.get_model_weights())
 
-        xij_s = [msg.x for msg in self.msg_q] + [x]
-        self.set_model_weights(np.sum(np.array(xij_s, dtype=object), axis=0))
+        # xij_s = [msg.x for msg in self.msg_q] + [x]
+        self.model_q = tf.nest.map_structure(lambda i, j: i + j, self.model_q, x)
+        self.set_model_weights(self.model_q)
+        # self.set_model_weights(np.sum(np.array(xij_s, dtype=object), axis=0))
 
-        self.w = self.w * wii + sum([msg.w for msg in self.msg_q])
-        self.msg_q.clear()
-
+        # self.w = self.w * wii + sum([msg.w for msg in self.msg_q])
+        self.w = self.w * wii + self.w_q
+        self.w_q = 0
+        self.model_q = None
+        # self.msg_q.clear()

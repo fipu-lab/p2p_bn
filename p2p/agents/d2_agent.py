@@ -19,7 +19,8 @@ class D2Agent(SyncAgent):
         self.t_1_weights = self.get_model_weights()
 
         self.make_train_iter()
-        self.msg_q = []
+        self.model_q = None
+        # self.msg_q = []
 
     def start(self):
         # First step is just a basic train on mini-batch
@@ -49,7 +50,12 @@ class D2Agent(SyncAgent):
         super(D2Agent, self).receive_message(other_agent)
         wji = self.graph.get_edge_weight(other_agent.id, self.id)
         w_xj_t2 = tf.nest.map_structure(lambda xj_t2: xj_t2 * wji, other_agent.get_model_weights())
-        self.msg_q.append(w_xj_t2)
+
+        if self.model_q is None:
+            self.model_q = w_xj_t2
+        else:
+            self.model_q = tf.nest.map_structure(lambda i, j: i + j, self.model_q, w_xj_t2)
+        # self.msg_q.append(w_xj_t2)
 
     def sync_parameters(self):
         # Multiply self model with self weight
@@ -57,10 +63,13 @@ class D2Agent(SyncAgent):
         xi_tw = tf.nest.map_structure(lambda xi: xi * wii, self.get_model_weights())
 
         # Sum weighted models
-        self.msg_q.append(xi_tw)
-        self.set_model_weights(np.sum(np.array(self.msg_q, dtype=object), axis=0))
+        # self.msg_q.append(xi_tw)
+        self.model_q = tf.nest.map_structure(lambda i, j: i + j, self.model_q, xi_tw)
+
+        self.set_model_weights(self.model_q)
         # Remember new weights as the weights from time step t-1
         self.t_1_weights = self.get_model_weights()
         # Delete messages
-        self.msg_q.clear()
+        # self.msg_q.clear()
+        self.model_q = None
 
