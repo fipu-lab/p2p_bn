@@ -16,6 +16,11 @@ def parse_args():
                         required=True,
                         type=int,
                         help="Number of clients to be used in simulation")
+    parser.add_argument("--dataset",
+                        required=False,
+                        type=str,
+                        default='reddit',
+                        help="Dataset to use in simulations")
     parser.add_argument("--batch_size",
                         default=50,
                         type=int,
@@ -66,7 +71,13 @@ if __name__ == '__main__':
     if not hasattr(mod, args.agent):
         raise ValueError(f"{args.agent} not found in 'p2p.agents' module")
 
+    if args.dataset == 'reddit':
+        from data.reddit import clients_data
+    else:
+        from data.stackoverflow import clients_data
+
     do_train(getattr(mod, args.agent),
+             clients_data,
              num_clients=args.clients,
              batch_size=args.batch_size,
              model_pars={"model_v": args.model_v, "lr": args.lr, "default_weights": True},

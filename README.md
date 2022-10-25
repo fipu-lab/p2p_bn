@@ -33,9 +33,9 @@ All result files of the experiments can be found on a shared [google drive](http
 
 #### Dataset preparation
 
-Preprocessed dataset can be downloaded from a shared [google drive](https://drive.google.com/drive/folders/1p1RqD0eeTMxXgyFB7WxVgSXEmkHMqPdV?usp=sharing). Unpack the zip into the `data` directory. When completed, folder `data/reddit/clients/` must contain all `.h5` files containing the training, validation and test data. Tokenizer must be placed in `data/reddit/`
+Preprocessed dataset can be downloaded from a shared [google drive](https://drive.google.com/drive/folders/1p1RqD0eeTMxXgyFB7WxVgSXEmkHMqPdV?usp=sharing). Unpack the zip into the `data` directory. When completed, folder `data/reddit/reddit/clients/` must contain all `.h5` files containing the training, validation and test data. Tokenizer must be placed in `data/reddit/reddit/`
 
-Alternatively, you can recreate this dataset by following the info in [Reddit.md](./data/Reddit.md).
+Alternatively, you can recreate this dataset by following the info in [Reddit.md](data/reddit/Reddit.md).
 
 
 **Simulations can be run either through [notebooks](/notebooks) or through cmd.**
@@ -45,7 +45,7 @@ Alternatively, you can recreate this dataset by following the info in [Reddit.md
 #### Running agent simulation
 ```
 $ test_p2p.py -h
-usage: test_p2p.py [-h] --agent AGENT --clients CLIENTS
+usage: test_p2p.py [-h] --agent AGENT --clients CLIENTS [--dataset DATASET]
                    [--batch_size BATCH_SIZE] [--epochs EPOCHS] [--seed SEED]
                    [--model_v MODEL_V] [--lr LR] [--agent_pars AGENT_PARS]
                    [--graph_type GRAPH_TYPE] [--neighbors NEIGHBORS]
@@ -55,6 +55,7 @@ optional arguments:
   -h, --help              show this help message and exit
   --agent AGENT           Agent class to be used in simulations
   --clients CLIENTS       Number of clients to be used in simulation
+  --dataset DATASET       Dataset to use in simulations
   --batch_size BATCH_SIZE Batch size (default 50)
   --epochs EPOCHS         Number of cumulative epoch to train (default 30)
   --seed SEED             Seed (default None)
@@ -70,7 +71,7 @@ optional arguments:
 Example:
 
 ```
-$ python test_p2p.py --agent P2PAgent --clients 100 --epochs 100
+$ python test_p2p.py --agent P2PAgent --clients 100 --epochs 100 --dataset reddit
 ```
 
 Parameter `agent_pars` expects a dictionary of name-values forwarded to the agent class. Surround dictionary with single quotes and values within dict with double-quotes.
