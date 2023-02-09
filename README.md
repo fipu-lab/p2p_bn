@@ -5,7 +5,7 @@ This is a repository of for papers:
 # Multi-task peer-to-peer learning using the BERT transformer model
 
 This paper presents and evaluates a novel approach that utilizes the popular BERT transformer model to enable collaboration between agents learning two different learning tasks: next- word prediction and named-entity recognition. The evaluation of the studied approach revealed that collaboration among agents, even when working towards separate objectives, can result in mutual benefits, mainly when the communication between agents is carefully considered. The multi-task collaboration led to a statistically significant increase of 11.6% in the mean relative accuracy compared to the baseline results for individual tasks.
-The code can be run through [notebooks](/notebooks) with names starting with **MT-**.
+The code can be run through [notebooks](/notebooks) with names starting with **BERT-**.
 Before running, prepared datasets need to be downloaded from [google drive](https://drive.google.com/drive/folders/1p1RqD0eeTMxXgyFB7WxVgSXEmkHMqPdV?usp=share_link).
 The datasets should be unzipped in the following directories:
 - CoNNL-2003 (conll.zip) at directory `data/ner/conll/`
