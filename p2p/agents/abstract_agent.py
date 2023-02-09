@@ -1,19 +1,26 @@
-from common.model import *
-# import environ
+import tensorflow as tf
 
 
 class Agent:
     # noinspection PyDefaultArgument
-    def __init__(self, train, val, test, model, graph=None, batch_size=50, eval_batch_size=50):
+    def __init__(self, data, model, graph=None, data_pars=None, eval_batch_size=50):
 
-        self.batch_size = batch_size
+        self.data_pars = data_pars
+        self.batch_size = data_pars['batch_size']
         self.eval_batch_size = eval_batch_size
-        self.train = self._create_dataset(train[0], train[1], self.batch_size)
-        self.val = self._create_dataset(val[0], val[1], self.eval_batch_size)
-        self.test = self._create_dataset(test[0], test[1], self.eval_batch_size)
-        self.train_len = len(train[1])
+        train, val, test = data.pop('train'), data.pop('val'), data.pop('test')
+        self.train = self._create_dataset(train[0], train[1], self.batch_size, self.data_pars.get('caching', False))
+        self.val = self._create_dataset(val[0], val[1], self.eval_batch_size, True)
+        self.test = self._create_dataset(test[0], test[1], self.eval_batch_size, True)
 
-        self.model = model
+        temp_train = train[1]
+        while isinstance(temp_train, tuple):
+            temp_train = temp_train[0]
+        self.train_len = len(temp_train)
+        self._data = data
+
+        self.model_pars = model
+        self.model = self._create_model(self.model_pars, ['model_mod'])
         self.graph = graph
 
         self.trained_examples = 0
@@ -21,7 +28,10 @@ class Agent:
                      "train_len":     self.train_len,
                      "useful_msg":    [0],
                      "useless_msg":   [0],
+                     "model_name":    self.model.name,
                      }
+        if 'dataset_name' in self._data:
+            self.hist['dataset_name'] = self._data['dataset_name']
 
         self.device = None
         self.iter = None
@@ -29,11 +39,15 @@ class Agent:
         self.id = 0
 
     @staticmethod
-    def _create_dataset(x, y, batch_size):
-        return tf.data.Dataset.from_tensor_slices((x, y)) \
-            .shuffle(batch_size) \
-            .batch(batch_size) \
-            .prefetch(1)
+    def _create_model(m_pars, ignored_keys):
+        return m_pars['model_mod'].create_model(**{k: v for k, v in m_pars.items() if k not in ignored_keys})
+
+    @staticmethod
+    def _create_dataset(x, y, batch_size, use_caching=False):
+        ds = tf.data.Dataset.from_tensor_slices((x, y)).shuffle(batch_size).batch(batch_size)
+        if use_caching:
+            ds = ds.cache()
+        return ds.prefetch(1)
 
     def next_train_batch(self):
         try:
@@ -50,6 +64,14 @@ class Agent:
             if key in k and metric_name in k:
                 return v[-1]
         return None
+
+    @property
+    def dataset_name(self):
+        return self._data.get('dataset_name', '')
+
+    @property
+    def model_name(self):
+        return self.model.name
 
     @property
     def hist_train_model_metric(self, metric_name='acc'):
@@ -69,13 +91,13 @@ class Agent:
 
     @property
     def memory_footprint(self):
-        return calculate_memory_model_size(self.model)
+        return self.model_pars['model_mod'].calculate_memory_model_size(self.model)
 
     def deserialize(self):
-        self.model = load('p2p_models/{}/agent_{}_model'.format(self.__class__.__name__, self.id))
+        self.model = self.model_pars['model_mod'].load('p2p_models/{}/agent_{}_model'.format(self.__class__.__name__, self.id))
 
     def serialize(self, save_only=False):
-        save(self.model, 'p2p_models/{}/agent_{}_model'.format(self.__class__.__name__, self.id))
+        self.model_pars['model_mod'].save(self.model, 'p2p_models/{}/agent_{}_model'.format(self.__class__.__name__, self.id))
         if not save_only:
             self.model = None
 
@@ -91,7 +113,7 @@ class Agent:
         return len(y)
 
     def train_epoch(self):
-        reset_compiled_metrics(self.model)
+        self.model_pars['model_mod'].reset_compiled_metrics(self.model)
 
         for (x, y) in self.train:
             self._train_on_batch(x, y)
@@ -139,13 +161,13 @@ class Agent:
         return True
 
     def _eval_train_metrics(self, m):
-        return eval_model_metrics(m, self.train)
+        return self.model_pars['model_mod'].eval_model_metrics(m, self.train)
 
     def _eval_val_metrics(self, m):
-        return eval_model_metrics(m, self.val)
+        return self.model_pars['model_mod'].eval_model_metrics(m, self.val)
 
     def _eval_test_metrics(self, m):
-        return eval_model_metrics(m, self.test)
+        return self.model_pars['model_mod'].eval_model_metrics(m, self.test)
 
     def calc_new_metrics(self, metrics_names=None):
         self.hist["examples"].append(self.trained_examples)

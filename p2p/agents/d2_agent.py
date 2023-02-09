@@ -58,6 +58,10 @@ class D2Agent(SyncAgent):
         # self.msg_q.append(w_xj_t2)
 
     def sync_parameters(self):
+        if self.model_q is None:
+            self.t_1_weights = self.get_model_weights()
+            print("No messages received")
+            return
         # Multiply self model with self weight
         wii = self.graph.get_edge_weight(self.id, self.id)
         xi_tw = tf.nest.map_structure(lambda xi: xi * wii, self.get_model_weights())

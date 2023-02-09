@@ -22,4 +22,10 @@ def load_clients_data(num_clients=100, seed=608361, max_train_examples=20_000):
         train.append([c[0][:int(c_len * 0.6)], c[1][:int(c_len * 0.6)]])
         val.append([c[0][int(c_len * 0.6):int(c_len * 0.8)], c[1][int(c_len * 0.6):int(c_len * 0.8)]])
         test.append([c[0][int(c_len * 0.8):], c[1][int(c_len * 0.8):]])
-    return train, val, test
+    data = {
+        "train": train,
+        "val": val,
+        "test": test,
+        "dataset_name": ['stackoverflow-nwp'] * num_clients,
+    }
+    return data

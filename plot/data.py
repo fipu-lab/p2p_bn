@@ -90,7 +90,7 @@ def plot_colormesh(matrix, method=None):
 
 
 def plot_colormeshes(m_names_dict, method=None, normalize=True, fig_size=(6.4, 4.8), n_rows=1):
-    fig, axs = plt.subplots(n_rows, int(len(m_names_dict) / n_rows))
+    fig, axs = plt.subplots(n_rows, int(len(m_names_dict) / n_rows) + (1 if len(m_names_dict) % n_rows != 0 else 0))
     axs = axs.flatten()
     if len(m_names_dict) < 2:
         axs = [axs]
@@ -103,10 +103,13 @@ def plot_colormeshes(m_names_dict, method=None, normalize=True, fig_size=(6.4, 4
         pcm = ax.pcolormesh(color_mesh, vmin=v_min, vmax=v_max)
         ax.set_title(title)
         ax.set_xlabel(string.ascii_lowercase[ax.get_subplotspec().num1] + ")")
-
+    for x in range(len(axs) - len(m_names_dict), 0, -1):
+        fig.delaxes(axs[-1])
     # fig.colorbar(pcm, cax=fig.add_axes([0.9, 0.1, 0.03, 0.8]))
     # fig.colorbar(pcm, ax=axs, location='bottom')
-    plt.colorbar(pcm, cax=fig.add_axes([0.9, 0.088, 0.03, 0.865]))
+    scale = 1 if fig_size is None else fig_size[1]/fig.get_figheight()
+    plt.colorbar(pcm, cax=fig.add_axes([0.9, 0.088 - scale * 0.012-0.012, 0.03, 0.865 + scale * 0.09 - 0.09])) # nrow=2
+    # plt.colorbar(pcm, cax=fig.add_axes([0.9, 0.06, 0.03, 0.91])) # nrow=3
 
     if fig_size is not None:
         fig.set_figwidth(fig_size[0])
@@ -131,5 +134,6 @@ if __name__ == '__main__':
         'MNIST (pathological non-IID)': 'data/mnist_pathological-non-iid_100_clients',
         'MNIST (practical non-IID)': 'data/mnist_practical-non-iid_100_clients',
         'Reddit': 'data/reddit_100_clients',
-    }, 'complete', fig_size=(6.4, 4.8), n_rows=2)
+        'StackOverflow': 'data/so_100_clients',
+    }, 'complete', fig_size=(6.4, 4.8*1.5), n_rows=3)
     # """

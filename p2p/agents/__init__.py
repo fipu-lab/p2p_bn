@@ -5,3 +5,4 @@ from .d2_agent import D2Agent
 from .abstract_agent import Agent
 from .sync_agent import SyncAgent
 from .async_agent import AsyncAgent
+from .bert_agent import BertAgent

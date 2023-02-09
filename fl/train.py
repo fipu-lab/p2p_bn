@@ -1,4 +1,4 @@
-from common import set_seed
+from models import set_seed
 from data.reddit import clients_data
 from fl.federated_averaging import train_fed_avg
 

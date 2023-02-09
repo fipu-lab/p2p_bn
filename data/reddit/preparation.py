@@ -13,8 +13,8 @@ import string
 from collections import Counter
 
 translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space
-TOKENIZER_PATH = 'data/reddit/reddit/reddit_tokenizer.pkl'
-DATA_PATH = 'data/reddit/reddit/'
+TOKENIZER_PATH = 'data/reddit/reddit_tokenizer.pkl'
+DATA_PATH = 'data/reddit/'
 
 
 def load_reddit_json(json_path):
@@ -81,30 +81,40 @@ def text_to_sequence(text_lines, text_tokenizer, max_len):
             words = sentence[max(i - max_len, 0):i + 1]
             seqs.append(words)
 
-    return np.array(pad_sequences(np.array(seqs), maxlen=max_len + 1, padding='pre'))
+    return np.array(pad_sequences(np.array(seqs), maxlen=max_len + 1, padding='post', value=0))
 
 
 def parse_json_agents(json_data):
-    j_agents = []
+    j_agents_x = []
+    j_agents_y = []
     for key in list(json_data.keys()):
-        j_agent_data = []
-        for s in json_data[str(key)]['x']:
-            s = ' '.join([' '.join(l) for l in s])
+        j_agent_data_x = []
+        j_agent_data_y = []
+        for sx, sy in zip(json_data[str(key)]['x'], json_data[str(key)]['y']):
+            s = ' '.join([' '.join(l) for l in sx])
             s = clean_text(s, translator)
-            j_agent_data.append(s)
+            j_agent_data_x.append(s)
+            j_agent_data_y.append(sy['subreddit'])
 
-        j_agents.append(j_agent_data)
-    return j_agents
+        j_agents_x.append(j_agent_data_x)
+        j_agents_y.append(j_agent_data_y)
+    return j_agents_x, j_agents_y
 
 
 def parse_clients(json_data, text_tokenizer, words_backwards, vocab_size, max_client_num, pre_filename):
 
-    j_agents = parse_json_agents(json_data)
+    j_agents_x, j_agents_y = parse_json_agents(json_data)
     j_clients = []
-    for a in tqdm(j_agents):
-        a_seq = text_to_sequence(a, text_tokenizer, words_backwards)
-        a_x, a_y = a_seq[:, :-1], a_seq[:, -1]
-        j_clients.append((np.array(a_x), np.array(a_y)))
+    for ax, ay in tqdm(zip(j_agents_x, j_agents_y), total=len(j_agents_y)):
+        a_seq = text_to_sequence(ax, text_tokenizer, words_backwards)
+        # a_x, a_y = a_seq[:, :-1], a_seq[:, -1]
+        a_x, a_y = [], []
+        for i in range(len(a_seq)):
+            ind = np.where(a_seq[i] == 0)
+            ind = ind[0][0] - 1 if len(ind[0]) > 0 else len(a_seq[i]) - 1
+            a_y.append(a_seq[i][ind])
+            a_x.append(np.delete(a_seq[i], ind))
+        j_clients.append((np.array(a_x), np.array(a_y), ay))
 
     prev_ind, cur_ind = 0, max_client_num
     part = 0
@@ -122,9 +132,9 @@ def parse_clients(json_data, text_tokenizer, words_backwards, vocab_size, max_cl
 def create_tokenizer(vocab_size, train_filenames_list):
     c = Counter()
     for filename in train_filenames_list:
-        j_data = load_reddit_json('data/reddit/reddit/source/data/reddit_leaf/train/{}'.format(filename))
-        agents = parse_json_agents(j_data)
-        c.update(''.join([''.join(a) for a in agents]).split())
+        j_data = load_reddit_json('data/reddit/source/data/reddit_leaf/train/{}'.format(filename))
+        agents, _ = parse_json_agents(j_data)
+        c.update(' '.join([' '.join(a) for a in agents]).split())
 
     words = np.array(c.most_common(vocab_size))[:, 0]
     tokenizer = Tokenizer(oov_token='UNK')
@@ -162,10 +172,11 @@ def parse_reddit_file(reddit_index=0, word_backwards=10, max_client_num=1_000):
     tokenizer = load_tokenizer()
     vocab_size = len(tokenizer.word_index) + 1
     # print(vocab_size)
+    os.makedirs('data/reddit/clients/', exist_ok=True)
     for data_type in ['train', 'val', 'test']:
         filename = 'reddit_{}_{}.json'.format(reddit_index, data_type)
         print("Parsing", filename)
-        json_data = load_reddit_json('data/reddit/reddit/source/data/reddit_leaf/{}/{}'.format(data_type, filename))
+        json_data = load_reddit_json('data/reddit/source/data/reddit_leaf/{}/{}'.format(data_type, filename))
         parse_clients(json_data, tokenizer,
                       words_backwards=word_backwards,
                       vocab_size=vocab_size,

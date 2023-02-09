@@ -1,6 +1,25 @@
-# P2P-BN
+This is a repository of for papers:
+ - [Peer-to-peer Deep Learning With Non-IID Data](https://www.sciencedirect.com/science/article/abs/pii/S0957417422021777)
+ - [Multi-task peer-to-peer learning using the BERT transformer model](https://) -> Under review
 
-This is a repository of a paper [Peer-to-peer Deep Learning With Non-IID Data](https://). This paper proposes using Batch Normalization (BN) layers as an aid in normalizing non-IID data across decentralized agents. A variant of early stopping technique is developed that, in combination with BN layers, acts as a tool for fine-tuning the agent’s local model. Other decentralized algorithms used in the paper experiments are also a part of this project. 
+# Multi-task peer-to-peer learning using the BERT transformer model
+
+This paper presents and evaluates a novel approach that utilizes the popular BERT transformer model to enable collaboration between agents learning two different learning tasks: next- word prediction and named-entity recognition. The evaluation of the studied approach revealed that collaboration among agents, even when working towards separate objectives, can result in mutual benefits, mainly when the communication between agents is carefully considered. The multi-task collaboration led to a statistically significant increase of 11.6% in the mean relative accuracy compared to the baseline results for individual tasks.
+The code can be run through [notebooks](/notebooks) with names starting with **MT-**.
+Before running, prepared datasets need to be downloaded from [google drive](https://drive.google.com/drive/folders/1p1RqD0eeTMxXgyFB7WxVgSXEmkHMqPdV?usp=share_link).
+The datasets should be unzipped in the following directories:
+- CoNNL-2003 (conll.zip) at directory `data/ner/conll/`
+- Few-NERD (few_nerd.zip) at directory `data/ner/few_nerd/`
+- Reddit (bert-reddit.zip) at directory 'data/reddit/bert_clients'
+- StackOverflow (bert-stackoverflow.zip) at directory 'data/stackoverflow/bert_clients'
+
+<br>
+<br>
+
+
+# Peer-to-peer Deep Learning With Non-IID Data (P2P-BN)
+
+This paper proposes using Batch Normalization (BN) layers as an aid in normalizing non-IID data across decentralized agents. A variant of early stopping technique is developed that, in combination with BN layers, acts as a tool for fine-tuning the agent’s local model. Other decentralized algorithms used in the paper experiments are also a part of this project. 
 
 ---
 

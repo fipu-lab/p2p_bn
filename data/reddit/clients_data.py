@@ -3,14 +3,30 @@ import numpy as np
 
 
 def load_client_datasets(num_clients=1_000):
-    return load_clients('train', num_clients), load_clients('val', num_clients), load_clients('test', num_clients)
+    train = load_clients('train', num_clients)
+    val = load_clients('val', num_clients)
+    test = load_clients('test', num_clients)
+    metadata = []
+    for tr, v, ts in zip(train, val, test):
+        subreddits = [d.decode() for d in tr[2]] + [d.decode() for d in v[2]] + [d.decode() for d in ts[2]]
+        metadata.append(np.unique(subreddits))
+
+    train = [el[:2] for el in train]
+    val = [el[:2] for el in val]
+    test = [el[:2] for el in test]
+    return train, val, test, metadata
 
 
 def load_clients_data(num_clients=100, starting_client=0):
-    tr, val, test = load_client_datasets(num_clients + starting_client)
-    return tr[starting_client:num_clients + starting_client], \
-           val[starting_client:num_clients + starting_client], \
-           test[starting_client:num_clients + starting_client]
+    tr, val, test, metadata = load_client_datasets(num_clients + starting_client)
+    data = {
+        "train": tr[starting_client:num_clients + starting_client],
+        "val": val[starting_client:num_clients + starting_client],
+        "test": test[starting_client:num_clients + starting_client],
+        "metadata-subreddits": metadata[starting_client:num_clients + starting_client],
+        "dataset_name": ['reddit-nwp'] * num_clients,
+    }
+    return data
 
 
 def filter_clients(train_clients, val_clients, test_clients, cli_num, examples_range, ret_val='clients'):

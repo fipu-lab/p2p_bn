@@ -2,39 +2,38 @@ from p2p.p2p_utils import *
 import time
 
 
-def init_agents(agent_class, train_clients, val_clients, test_clients, batch_size, model_pars=None, agent_pars=None):
+def init_agents(agent_pars, agent_data_pars, model_pars=None):
     start_time = time.time()
-    model_default = {"model_v": 1, "lr": 0.001, "decay": 0, "default_weights": False}
-    model_pars = model_default if model_pars is None else {**model_default, **model_pars}
-    agent_pars = agent_pars or {}
 
-    num_agents = len(train_clients)
-    print("{}: {} agents, batch size: {}, model_pars: {}, agent_pars: {}".format(
-        agent_class.__name__, num_agents, batch_size, model_pars, agent_pars))
+    client_pars = {k: v for k, v in agent_data_pars.items() if k not in ['agents_data', 'batch_size', 'caching']}
+    data_dict = agent_data_pars['agents_data'].load_clients_data(**client_pars)
+    num_agents = len(data_dict["train"])
 
-    clear_def_weights_cache()
+    # clear_def_weights_cache()
 
-    pbar = tqdm(total=num_agents, position=0, leave=False, desc='Init agents')
+    agent_class = agent_pars['agent_class']
+    pbar = tqdm(total=num_agents, position=0, leave=False, desc='Init {} agents'.format(agent_class.__name__.split('.')[-1]))
     devices = environ.get_devices()
     agents = []
 
-    for agent_id, (train, val, test) in enumerate(zip(train_clients, val_clients, test_clients)):
+    # for agent_id, (train, val, test) in enumerate(zip(train_clients, val_clients, test_clients)):
+    for agent_id in range(num_agents):
         device = resolve_agent_device(agents, None, devices)
         with tf.device(device or 'CPU'):
             clear_session()
-            agent_pars['train'] = train
-            agent_pars['val'] = val
-            agent_pars['test'] = test
-            agent_pars['batch_size'] = batch_size
-            agent_pars['model'] = create_model(**model_pars)
-            a = agent_class(**agent_pars)
+
+            a_p = {k: v for k, v in agent_pars.items() if k not in ['agent_class']}
+            a_p['data'] = {k: v[agent_id] for k, v in data_dict.items()}
+            # a_p['train'], a_p['val'], a_p['test'] = train, val, test
+            a_p['data_pars'], a_p['model'] = agent_data_pars, model_pars
+
+            a = agent_class(**a_p)
             a.device = device
             a.id = agent_id
             agents.append(a)
         update_pb(pbar, agents, 1, start_time)
     pbar.close()
-    print("Init agents: {} minutes".format(round((time.time() - start_time) / 60)))
-    # environ.save_env_vars()
+    print("Init {} agents: {} minutes".format(agent_class.__name__.split('.')[-1], round((time.time() - start_time) / 60)))
     return agents
 
 

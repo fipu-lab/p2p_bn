@@ -1428,7 +1428,7 @@ def plot_reddit_so_experiment_3():
     box0 = axs[0].get_position()
     axs[0].set_position([box0.x0, box0.y0, box0.width * ratio, box0.height])
     box = axs[1].get_position()
-    axs[1].set_position([box.x0 - box0.width * (1-ratio), box.y0, box.width * ratio, box.height])
+    axs[1].set_position([box.x0 - box0.width * (1 - ratio), box.y0, box.width * ratio, box.height])
 
 
 def bn_ft_significance():
@@ -1599,5 +1599,692 @@ def independent_acc():
             print(k, "{:.3%}".format(np.average(max_acc)))
 
 
+def review_exp_ring():
+    viz = {
+        'MNIST-IID (Undirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_08-07-2022_03_44',
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_13-07-2022_12_35',
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_13-07-2022_12_20',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_08-07-2022_06_08',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_13-07-2022_10_55',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_13-07-2022_11_09'
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_08-07-2022_03_47',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_14-07-2022_03_09',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_14-07-2022_03_17',
+                ],
+            },
+        },
+        'MNIST-Pathological (Undirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_13-09-2022_15_36',
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_13-09-2022_15_22',
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_13-09-2022_15_36',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_14-09-2022_00_21',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_14-09-2022_17_06',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_14-09-2022_17_17',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_14-09-2022_18_01',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_14-09-2022_17_59',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_14-09-2022_18_02',
+                ],
+            },
+        },
+        'MNIST-Practical (Undirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_16-09-2022_20_56',
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_16-09-2022_21_37',
+                    'rev/D2Agent_100A_100E_32B_ring(undirected-2)_16-09-2022_21_37',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_17-09-2022_21_51',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_17-09-2022_21_54',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(undirected-2)_17-09-2022_21_59',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_17-09-2022_14_20',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_17-09-2022_14_29',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(undirected-2)_17-09-2022_14_29',
+                ],
+            },
+        },
+        'Reddit (Unirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-accuracy_no_oov',
+            'viz': {
+                'D$^2$': [
+                    'experiment_1/undirected/nonbn/D2Agent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_29-11-2021_12_02',
+                    'experiment_1/undirected/nonbn/D2Agent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_27-11-2021_18_22',
+                    'experiment_1/undirected/nonbn/D2Agent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_27-11-2021_22_18',
+                    # 'experiment_1/undirected/nonbn/D2Agent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_11-03-2022_16_06',
+                    # 'experiment_1/undirected/nonbn/D2Agent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_11-03-2022_12_16',
+                ],
+                'GoSGD': [
+                    'experiment_1/undirected/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_20-12-2021_09_35',
+                    'experiment_1/undirected/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_20-12-2021_09_16',
+                    'experiment_1/undirected/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_20-12-2021_11_20',
+                    # 'experiment_1/undirected/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_11-03-2022_14_17',
+                    # 'experiment_1/undirected/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_11-03-2022_11_34',
+                ],
+                'SGP': [
+                    'experiment_1/undirected/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_29-11-2021_12_29',
+                    'experiment_1/undirected/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_27-11-2021_18_32',
+                    'experiment_1/undirected/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_27-11-2021_22_55',
+                    # 'experiment_1/undirected/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_11-03-2022_15_49',
+                    # 'experiment_1/undirected/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(undirected)_N100_NB2_TV-1_11-03-2022_11_57',
+                ],
+            },
+        },
+        'MNIST-IID (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_08-07-2022_04_03',
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_13-07-2022_12_23',
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_13-07-2022_12_22',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_08-07-2022_05_43',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_13-07-2022_10_45',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_13-07-2022_11_12',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_08-07-2022_05_10',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_14-07-2022_03_04',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_14-07-2022_03_03',
+                ],
+            },
+        },
+        'MNIST-Pathological (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_13-09-2022_15_59',
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_13-09-2022_15_56',
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_13-09-2022_15_50',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_13-09-2022_14_02',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_13-09-2022_13_43',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_13-09-2022_13_38',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_13-09-2022_15_41',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_13-09-2022_15_23',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_13-09-2022_15_27',
+                ],
+            },
+        },
+        'MNIST-Practical (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_18-09-2022_06_05',
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_18-09-2022_06_05',
+                    'rev/D2Agent_100A_100E_32B_ring(directed-1)_18-09-2022_06_21',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_18-09-2022_19_41',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_18-09-2022_19_36',
+                    'rev/GoSGDAgent_100A_100E_32B_ring(directed-1)_19-09-2022_07_18',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_19-09-2022_02_40',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_19-09-2022_02_47',
+                    'rev/SGPPushSumAgent_100A_100E_32B_ring(directed-1)_19-09-2022_02_54',
+                ],
+            },
+        },
+        'Reddit (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-accuracy_no_oov',
+            'viz': {
+                'D$^2$': [
+                    'experiment_1/directed/nonbn/D2Agent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_18-12-2021_08_36',
+                    'experiment_1/directed/nonbn/D2Agent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_18-12-2021_08_07',
+                    'experiment_1/directed/nonbn/D2Agent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_18-12-2021_09_30',
+                    # 'experiment_1/directed/nonbn/D2Agent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_12-03-2022_08_04',
+                    # 'experiment_1/directed/nonbn/D2Agent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_12-03-2022_04_11',
+                ],
+                'GoSGD': [
+                    'experiment_1/directed/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_20-12-2021_08_58',
+                    'experiment_1/directed/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_20-12-2021_08_38',
+                    'experiment_1/directed/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_21-12-2021_04_26',
+                    # 'experiment_1/directed/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_12-03-2022_06_02',
+                    # 'experiment_1/directed/nonbn/GoSGDAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_12-03-2022_03_44',
+                ],
+                'SGP': [
+                    'experiment_1/directed/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_17-12-2021_17_46',
+                    'experiment_1/directed/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_17-12-2021_17_25',
+                    'experiment_1/directed/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_17-12-2021_19_16',
+                    # 'experiment_1/directed/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_12-03-2022_07_43',
+                    # 'experiment_1/directed/nonbn/SGPPushSumAgent_100A_100E_50B_2V_ring(directed)_N100_NB1_TV-1_12-03-2022_04_26',
+                ],
+            },
+        }
+    }
+    side_by_side(viz, n_rows=2, fig_size=(15, 7),
+                 axis_lim=[{'y': [85, 100]}, {'y': [85, 100]}, {'y': [85, 100]}, {'y': [0, 10]},
+                           {'y': [85, 100]}, {'y': [85, 100]}, {'y': [85, 100]}, {'y': [0, 10]}])
+
+    print("Statistics")
+    data = {}
+    for _, g in viz.items():
+        for k, v in g['viz'].items():
+            if k in data:
+                data[k + '-' + _].extend(v)
+            else:
+                data[k + '-' + _] = v
+    res = {}
+    for k, v in data.items():
+        t = 0
+        acc = 0
+        for vl in v:
+            t1, t_acc = resolve_timeline(vl, 'comms',
+                                         metric='test_model-accuracy_no_oov' if 'Reddit' in k else 'test_model-sparse_categorical_accuracy')
+            t1 = t1[:101]
+            t += t1[-1] / 100
+            acc += max(t_acc)
+        print(k, "# msgs:", round(t / len(v)), "Avg top acc:", round(acc / len(v), 2))
+        k1 = k.split(' ')[0]
+        if k1 in res:
+            res[k1].append(round(acc / len(v), 2))
+        else:
+            res[k1] = [round(acc / len(v), 2)]
+    print('---------------------')
+    for k, v in res.items():
+        print(k, round(np.mean(v), 2))
+
+
+def review_exp_sparse():
+    viz = {
+        'MNIST-IID (Undirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_09-07-2022_03_38',
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_16-07-2022_09_18',
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_16-07-2022_09_11',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_08-07-2022_10_21',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_16-07-2022_07_35',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_16-07-2022_07_46',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_08-07-2022_10_40',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_16-07-2022_09_49',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_16-07-2022_09_22',
+                ],
+            },
+        },
+        'MNIST-Pathological (Unirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_14-09-2022_16_03',
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_14-09-2022_16_06',
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_14-09-2022_16_04',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_14-09-2022_14_55',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_14-09-2022_14_52',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_14-09-2022_14_30',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_14-09-2022_15_54',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_14-09-2022_16_00',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_14-09-2022_15_54',
+                ],
+            },
+        },
+        'MNIST-Practical (Unirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_19-09-2022_23_27',
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_19-09-2022_23_30',
+                    'rev/D2Agent_100A_100E_32B_sparse(undirected-3)_19-09-2022_23_36',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_18-09-2022_21_16',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_19-09-2022_01_27',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(undirected-3)_19-09-2022_01_30',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_19-09-2022_22_35',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_20-09-2022_11_38',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(undirected-3)_19-09-2022_22_27',
+                ],
+            },
+        },
+        'Reddit (Undirected)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-accuracy_no_oov',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_50B_sparse(undirected-3)_18-07-2022_08_01',
+                    'rev/D2Agent_100A_100E_50B_sparse(undirected-3)_18-07-2022_05_42',
+                    'rev/D2Agent_100A_100E_50B_sparse(undirected-3)_18-07-2022_12_07',
+                    # 'rev/D2Agent_100A_100E_50B_sparse(undirected-3)_18-07-2022_09_18',
+                    # 'rev/D2Agent_100A_100E_50B_sparse(undirected-3)_18-07-2022_00_07',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_50B_sparse(undirected-3)_17-07-2022_23_07',
+                    'rev/GoSGDAgent_100A_100E_50B_sparse(undirected-3)_17-07-2022_22_19',
+                    'rev/GoSGDAgent_100A_100E_50B_sparse(undirected-3)_18-07-2022_01_01',
+                    # 'rev/GoSGDAgent_100A_100E_50B_sparse(undirected-3)_18-07-2022_00_09',
+                    # 'rev/GoSGDAgent_100A_100E_50B_sparse(undirected-3)_18-07-2022_12_53',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_50B_sparse(undirected-3)_18-07-2022_02_10',
+                    'rev/SGPPushSumAgent_100A_100E_50B_sparse(undirected-3)_18-07-2022_00_26',
+                    'rev/SGPPushSumAgent_100A_100E_50B_sparse(undirected-3)_18-07-2022_02_15',
+                    # 'rev/SGPPushSumAgent_100A_100E_50B_sparse(undirected-3)_18-07-2022_00_45',
+                    # 'rev/SGPPushSumAgent_100A_100E_50B_sparse(undirected-3)_17-07-2022_20_02',
+                ],
+            }
+        },
+        'MNIST-IID (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_09-07-2022_03_18',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_59',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_45',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_08-07-2022_10_14',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_02_51',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_02_41',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_08-07-2022_10_34',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_38',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_03_41',
+                ],
+            },
+        },
+        'MNIST-Pathological (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_53',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_49',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_57',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_35',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_28',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_48',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_54',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_56',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_48',
+                ],
+            },
+        },
+        'MNIST-Practical (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_20-09-2022_13_11',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_21-09-2022_20_27',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_21-09-2022_20_27',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_41',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_39',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_42',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_20-09-2022_11_09',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_21-09-2022_00_29',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_21-09-2022_19_51',
+                ],
+            },
+        },
+        'Reddit (Directed)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-accuracy_no_oov',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_50B_sparse(directed-3)_18-07-2022_17_58',
+                    'rev/D2Agent_100A_100E_50B_sparse(directed-3)_18-07-2022_17_13',
+                    'rev/D2Agent_100A_100E_50B_sparse(directed-3)_18-07-2022_20_59',
+                    # 'rev/D2Agent_100A_100E_50B_sparse(directed-3)_19-07-2022_16_03',
+                    # 'rev/D2Agent_100A_100E_50B_sparse(directed-3)_19-07-2022_01_54',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_08_24',
+                    'rev/GoSGDAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_07_29',
+                    'rev/GoSGDAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_11_22',
+                    # 'rev/GoSGDAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_09_08',
+                    # 'rev/GoSGDAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_06_27',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_06_47',
+                    'rev/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_06_21',
+                    'rev/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_10_05',
+                    # 'rev/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_09_10',
+                    # 'rev/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_17-07-2022_05_24',
+                ],
+            }
+        },
+    }
+    side_by_side(viz, n_rows=2, fig_size=(15, 7),
+                 axis_lim=[{'y': [85, 100]}, {'y': [85, 100]}, {'y': [85, 100]}, {'y': [0, 10]},
+                           {'y': [85, 100]}, {'y': [85, 100]}, {'y': [85, 100]}, {'y': [0, 10]}])
+
+    print("Statistics")
+    data = {}
+    for _, g in viz.items():
+        for k, v in g['viz'].items():
+            if k in data:
+                data[k + '-' + _].extend(v)
+            else:
+                data[k + '-' + _] = v
+    res = {}
+    for k, v in data.items():
+        t = 0
+        acc = 0
+        for vl in v:
+            t1, t_acc = resolve_timeline(vl, 'comms',
+                                         metric='test_model-accuracy_no_oov' if 'Reddit' in k else 'test_model-sparse_categorical_accuracy')
+            t1 = t1[:101]
+            t += t1[-1] / 100
+            acc += max(t_acc)
+        print(k, "# msgs:", round(t / len(v)), "Avg top acc:", round(acc / len(v), 2))
+        k1 = k.split(' ')[0]
+        if k1 in res:
+            res[k1].append(round(acc / len(v), 2))
+        else:
+            res[k1] = [round(acc / len(v), 2)]
+    print('---------------------')
+    for k, v in res.items():
+        print(k, round(np.mean(v), 2))
+
+
+def prez_info_mnist():
+    viz = {
+        'MNIST-IID': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_09-07-2022_03_18',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_59',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_45',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_08-07-2022_10_14',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_02_51',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_02_41',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_08-07-2022_10_34',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_38',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_03_41',
+                ],
+            },
+        },
+        'MNIST-Pathological': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_53',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_49',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_57',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_35',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_28',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_48',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_54',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_56',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_48',
+                ],
+            },
+        },
+        'MNIST-Practical': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_20-09-2022_13_11',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_21-09-2022_20_27',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_21-09-2022_20_27',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_41',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_39',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_42',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_20-09-2022_11_09',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_21-09-2022_00_29',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_21-09-2022_19_51',
+                ],
+            },
+        },
+
+        'MNIST-IID (uniform)': {
+            'x_axis': 'epoch',
+            'metric': 'test_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_09-07-2022_03_18',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_59',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_45',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_08-07-2022_10_14',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_02_51',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_02_41',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_08-07-2022_10_34',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_04_38',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_17-07-2022_03_41',
+                ],
+            },
+        },
+        'MNIST-Pathological (uniform)': {
+            'x_axis': 'epoch',
+            'metric': 'val_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_53',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_49',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_57',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_35',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_28',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_17_48',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_54',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_56',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_14-09-2022_18_48',
+                ],
+            },
+        },
+        'MNIST-Practical (uniform)': {
+            'x_axis': 'epoch',
+            'metric': 'val_model-sparse_categorical_accuracy',
+            'viz': {
+                'D$^2$': [
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_20-09-2022_13_11',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_21-09-2022_20_27',
+                    'rev/D2Agent_100A_100E_32B_sparse(directed-3)_21-09-2022_20_27',
+                ],
+                'GoSGD': [
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_41',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_39',
+                    'rev/GoSGDAgent_100A_100E_32B_sparse(directed-3)_19-09-2022_21_42',
+                ],
+                'SGP': [
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_20-09-2022_11_09',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_21-09-2022_00_29',
+                    'rev/SGPPushSumAgent_100A_100E_32B_sparse(directed-3)_21-09-2022_19_51',
+                ],
+            },
+        },
+    }
+    side_by_side(viz, n_rows=2, fig_size=(15, 7),
+                 axis_lim=[{'y': [85, 100]}, {'y': [40, 100], 'step': 5}, {'y': [85, 100]},
+                           {'y': [85, 100]}, {'y': [40, 100], 'step': 5}, {'y': [85, 100]}])
+
+
+def pre_info_nwp():
+    viz = {
+        'Reddit': {
+            'x_axis': 'epoch',
+            # 'colors': colors,
+            'viz': {
+                ALG_NAME: [
+                    'experiment_2/fixed/directed/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_29-11-2021_20_59',
+                    'experiment_2/fixed/directed/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_01_19',
+                    'experiment_2/fixed/directed/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_06_33',
+                    'experiment_2/fixed/directed/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_13-03-2022_00_54',
+                    'experiment_2/fixed/directed/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_12-03-2022_23_26',
+                ],
+                'GoSGD': [
+                    'experiment_2/fixed/directed/GoSGDAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_29-11-2021_13_27',
+                    'experiment_2/fixed/directed/GoSGDAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_08_51',
+                    'experiment_2/fixed/directed/GoSGDAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_12_38',
+                    'experiment_2/fixed/directed/GoSGDAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_14-03-2022_03_49',
+                    'experiment_2/fixed/directed/GoSGDAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_14-03-2022_11_09',
+                ],
+                'D$^2$': [
+                    'experiment_2/fixed/directed/D2Agent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_12_40',
+                    'experiment_2/fixed/directed/D2Agent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_11_56',
+                    'experiment_2/fixed/directed/D2Agent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_14_06',
+                    'experiment_2/fixed/directed/D2Agent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_14-03-2022_11_49',
+                    'experiment_2/fixed/directed/D2Agent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_14-03-2022_06_13',
+                ],
+                'SGP': [
+                    'experiment_2/fixed/directed/SGPPushSumAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_12_40',
+                    'experiment_2/fixed/directed/SGPPushSumAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_12_01',
+                    'experiment_2/fixed/directed/SGPPushSumAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_30-11-2021_14_51',
+                    'experiment_2/fixed/directed/SGPPushSumAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_14-03-2022_09_19',
+                    'experiment_2/fixed/directed/SGPPushSumAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_14-03-2022_04_48',
+                ],
+            }
+        },
+        'StackOverflow': {
+            'x_axis': 'epoch',
+            # 'colors': colors,
+            'viz': {
+                ALG_NAME: [
+                    'experiment_2/fixed/directed/so/P2PAgent_100A_100E_50B_sparse(directed-3)_18-09-2022_22_25',
+                    'experiment_2/fixed/directed/so/P2PAgent_100A_100E_50B_sparse(directed-3)_27-09-2022_20_15',
+                    'experiment_2/fixed/directed/so/P2PAgent_100A_100E_50B_sparse(directed-3)_28-09-2022_09_10',
+                    'experiment_2/fixed/directed/so/P2PAgent_100A_100E_50B_sparse(directed-3)_07-10-2022_22_56',
+                    'experiment_2/fixed/directed/so/P2PAgent_100A_100E_50B_sparse(directed-3)_08-10-2022_14_22',
+                ],
+                'GoSGD': [
+                    'experiment_2/fixed/directed/so/GoSGDAgent_100A_100E_50B_sparse(directed-3)_17-09-2022_14_16',
+                    'experiment_2/fixed/directed/so/GoSGDAgent_100A_100E_50B_sparse(directed-3)_01-10-2022_13_02',
+                    'experiment_2/fixed/directed/so/GoSGDAgent_100A_100E_50B_sparse(directed-3)_02-10-2022_19_35',
+                    'experiment_2/fixed/directed/so/GoSGDAgent_100A_100E_50B_sparse(directed-3)_11-10-2022_16_31',
+                    'experiment_2/fixed/directed/so/GoSGDAgent_100A_100E_50B_sparse(directed-3)_12-10-2022_21_49',
+                ],
+                'D$^2$': [
+                    'experiment_2/fixed/directed/so/D2Agent_100A_100E_50B_sparse(directed-3)_17-09-2022_19_33',
+                    'experiment_2/fixed/directed/so/D2Agent_100A_100E_50B_sparse(directed-3)_01-10-2022_19_06',
+                    'experiment_2/fixed/directed/so/D2Agent_100A_100E_50B_sparse(directed-3)_03-10-2022_02_15',
+                    'experiment_2/fixed/directed/so/D2Agent_100A_100E_50B_sparse(directed-3)_15-10-2022_10_13',
+                    'experiment_2/fixed/directed/so/D2Agent_100A_100E_50B_sparse(directed-3)_18-10-2022_20_38',
+                ],
+                'SGP': [
+                    'experiment_2/fixed/directed/so/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_18-09-2022_17_26',
+                    'experiment_2/fixed/directed/so/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_28-09-2022_20_12',
+                    'experiment_2/fixed/directed/so/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_30-09-2022_01_15',
+                    'experiment_2/fixed/directed/so/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_11-10-2022_20_52',
+                    'experiment_2/fixed/directed/so/SGPPushSumAgent_100A_100E_50B_sparse(directed-3)_13-10-2022_17_08',
+                ],
+            }
+        },
+    }
+
+    side_by_side(viz, fig_size=(7, 7 / 2), axis_lim=[{'y': [0, 11]}, {'y': [0, 14]}])
+
+
+def prez_info_abl():
+    side_by_side({
+        'Reddit': {
+            'x_axis': 'epoch',
+            'colors': ['r', 'orange', 'b', 'g'],
+            'viz': {
+                ALG_NAME + ' (BN-FT)': [
+                    'exp_es/es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_19-01-2022_03_53',
+                    'exp_es/es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_19-01-2022_10_56',
+                    'exp_es/es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_19-01-2022_04_15',
+                    'exp_es/es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_09-03-2022_12_23',
+                    'exp_es/es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_09-03-2022_11_40',
+                ],
+                ALG_NAME + ' (No BN-FT)': [
+                    'exp_es/no_es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_19-01-2022_02_41',
+                    'exp_es/no_es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_19-01-2022_03_01',
+                    'exp_es/no_es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_19-01-2022_03_24',
+                    'exp_es/no_es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_09-03-2022_12_22',
+                    'exp_es/no_es/P2PAgent_100A_100E_50B_4V_sparse(directed)_N100_NB3_TV-1_09-03-2022_11_31',
+                ],
+            }
+        },
+        'StackOverflow': {
+            'x_axis': 'epoch',
+            'colors': ['r', 'orange', 'b', 'g'],
+            'viz': {
+                ALG_NAME + ' (BN-FT)': [
+                    'exp_es/es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_15-09-2022_04_28',
+                    'exp_es/es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_19-09-2022_10_45',
+                    'exp_es/es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_19-09-2022_17_26',
+                    'exp_es/es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_07-10-2022_23_19',
+                    'exp_es/es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_08-10-2022_20_35',
+                ],
+                ALG_NAME + ' (No BN-FT)': [
+                    'exp_es/no_es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_15-09-2022_03_55',
+                    'exp_es/no_es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_19-09-2022_00_42',
+                    'exp_es/no_es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_19-09-2022_13_32',
+                    'exp_es/no_es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_10-10-2022_20_12',
+                    'exp_es/no_es/so/P2PAgent_100A_100E_50B_sparse(directed-3)_11-10-2022_19_14',
+                ],
+            }
+        },
+    }, fig_size=(7, 7/2), axis_lim=[{'y': [0, 11]}, {'y': [0, 14]}])
+
+
 if __name__ == '__main__':
-    plot_reddit_so_experiment_3()
+    prez_info_abl()

@@ -1,4 +1,5 @@
 from p2p.agents.sync_agent import *
+import numpy as np
 
 
 # Distributed optimization for deep learning with gossip exchange

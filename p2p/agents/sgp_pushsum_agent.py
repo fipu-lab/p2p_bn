@@ -64,6 +64,9 @@ class SGPPushSumAgent(SyncAgent):
         self.w_q += w
 
     def sync_parameters(self):
+        if self.model_q is None:
+            print("No messages received")
+            return
         # Agent must have "connection with itself"
         wii = self.graph.get_edge_weight(self.id, self.id)
         x = tf.nest.map_structure(lambda w: w * wii, self.get_model_weights())

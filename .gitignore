@@ -121,3 +121,16 @@ models/*
 *.h5
 *.pkl
 credentials.json
+
+log/*
+models/zoo/bert/models/*
+data/reddit/source/data/reddit_leaf/*
+data/reddit/*.pkl
+data/stackoverflow/credentials.json
+data/stackoverflow/clients/*
+data/stackoverflow/users/*
+data/stackoverflow/stackoverflow_tokenizer.pkl
+data/femnist/femnist/data/*
+data/sent140/sent140/data/*
+# *.json
+*.md5

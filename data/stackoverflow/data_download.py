@@ -14,7 +14,7 @@ def download_data(credentials_path):
             """
     result = client.query(query).result().to_dataframe()
     users = {str(u_id): list(result[result.u_id == u_id].comment) for u_id in result.u_id.unique()}
-    save_json('data/stackoverflow/stackoverflow_0.json', users)
+    save_json('data/stackoverflow/users/stackoverflow_0.json', users)
 
 
 if __name__ == '__main__':

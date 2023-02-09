@@ -87,9 +87,8 @@ def text_to_sequence(text_lines, text_tokenizer, max_len):
             words = sentence[max(i - max_len, 0):i + 1]
             seqs.append(words)
 
-    return np.array(pad_sequences(np.array(seqs), maxlen=max_len + 1, padding='pre'))
-
-# data = load_stackoverflow_json(DATA_PATH + 'stackoverflow_0.json')
+    # return np.array(pad_sequences(np.array(seqs), maxlen=max_len + 1, padding='pre'))
+    return np.array(pad_sequences(np.array(seqs), maxlen=max_len + 1, padding='post', value=0))
 
 
 def parse_clients(json_data, text_tokenizer, words_backwards, vocab_size, max_client_num, pre_filename):
@@ -98,7 +97,13 @@ def parse_clients(json_data, text_tokenizer, words_backwards, vocab_size, max_cl
     j_clients = []
     for a in tqdm(j_agents):
         a_seq = text_to_sequence(a, text_tokenizer, words_backwards)
-        a_x, a_y = a_seq[:, :-1], a_seq[:, -1]
+        # a_x, a_y = a_seq[:, :-1], a_seq[:, -1]
+        a_x, a_y = [], []
+        for i in range(len(a_seq)):
+            ind = np.where(a_seq[i] == 0)
+            ind = ind[0][0] - 1 if len(ind[0]) > 0 else len(a_seq[i]) - 1
+            a_y.append(a_seq[i][ind])
+            a_x.append(np.delete(a_seq[i], ind))
         j_clients.append((np.array(a_x), np.array(a_y)))
 
     prev_ind, cur_ind = 0, max_client_num

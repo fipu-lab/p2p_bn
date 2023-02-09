@@ -1,15 +1,17 @@
-from common import *
+from models import *
 import numpy as np
 import tensorflow as tf
 
 
 def print_acc(accs, info):
     accs = np.array(accs or [0])
-    print("{}\t\t{:.3%}\t\t{:.3%}".format(info, np.average(accs), np.median(accs)))
+    if len(accs[accs > 1]):
+        print("{}\t\t{}\t\t{:.4}".format(info, sum(accs), np.mean(accs)))
+    else:
+        print("{}\t\t{:.3%}\t\t{:.3%}".format(info, np.average(accs), np.median(accs)))
 
 
-def calc_agents_metrics(agents, e=0):
-    print("Epoch:", e)
+def calc_new_agent_metrics(agents):
     devices = environ.get_devices()
     pbar = tqdm(total=len(agents), position=0, leave=False, desc='Evaluating agents')
     for a in agents:
@@ -19,10 +21,16 @@ def calc_agents_metrics(agents, e=0):
         update_pb(pbar, agents)
     pbar.close()
 
+
+def calc_agents_metrics(agents, e=0, print_metrics=None, group_by_dataset=False):
+    print("Epoch:", e)
+    calc_new_agent_metrics(agents)
     h = {}
     for a in agents:
         for hk, hv in a.hist.items():
             if '-' in hk:
+                if group_by_dataset:
+                    hk = "{}->{}".format(a.dataset_name, hk)
                 if hk not in h:
                     h[hk] = []
                 h[hk].append(hv[-1])
@@ -31,8 +39,9 @@ def calc_agents_metrics(agents, e=0):
     print(("\t{: <" + str(max_len) + "}\t\tMean\t\tMedian").format('Metric'))
     print('\t' + '-' * (max_len + 35))
     for hk, hv in h.items():
+        if print_metrics is not None and hk.split('->')[-1] not in print_metrics:
+            continue
         print_acc(hv, ("\t{: <" + str(max_len) + "}").format(hk + ':'))
-
     print('', end='', flush=True)
 
 
@@ -89,5 +98,11 @@ def update_pb(pbar, agents, n=1, start_time=None):
     pbar.set_postfix(postfix)
 
 
-def dump_acc_hist(filename, agents, graph):
-    save_json(filename, {'agents': {a.id: a.hist for a in agents}, 'graph': graph})
+def dump_acc_hist(filename, agents, graph, info={}):
+    if type(info) is dict:
+        for k, v in info.items():
+            if type(v) is dict:
+                info[k] = {ki: str(vi) for ki, vi in v.items()}
+            else:
+                info[k] = str(v)
+    save_json(filename, {'agents': {a.id: a.hist for a in agents}, 'graph': graph, 'info': info})

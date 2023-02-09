@@ -5,6 +5,13 @@ from p2p.agents import SyncAgent
 
 from datetime import datetime
 import time
+import tensorflow as tf
+import logging
+
+
+def print_pars_info(**kwargs):
+    for k, v in kwargs.items():
+        print(k+":", v)
 
 
 def parse_acc_step(accuracy_step, examples):
@@ -15,22 +22,34 @@ def parse_acc_step(accuracy_step, examples):
     return accuracy_step
 
 
-def train_loop(agent_class, train, val, test, batch_size, model_pars, graph_pars, agent_pars=None, epochs=1, seed=None,
-               accuracy_step='epoch'):
-    set_seed(seed)
-    agents = init_agents(agent_class, train, val, test, batch_size, model_pars, agent_pars)
+def train_loop(agent_pars, agent_data_pars, model_pars, graph_pars, sim_pars):
+    print_pars_info(agent_pars=agent_pars, agent_data_pars=agent_data_pars,
+                    model_pars=model_pars, graph_pars=graph_pars, sim_pars=sim_pars)
+    set_seed(sim_pars.get('seed'))
+
+    agents = []
+    for ap, adp, mp in zip(agent_pars, agent_data_pars, model_pars):
+        agents.extend(init_agents(ap, adp, mp))
+
+    for a_i, a in enumerate(agents):
+        a.id = a_i
+
     graph_manager = GraphManager(nodes=agents, **graph_pars)
     for a in agents:
         a.graph = graph_manager
-    print(graph_manager.graph_info())
 
     start_time = time.time()
     examples = sum([a.train_len for a in agents])
 
     devices = environ.get_devices()
     # accuracy_step = parse_acc_step(accuracy_step, examples)
+    epochs = sim_pars.get('epochs', 1)
+    agent_class = agent_pars[0]['agent_class']
+    print_args = sim_pars.get('print_args', {})
     max_examples = epochs * examples
     total_examples, round_num = 0, 0
+
+    tf.get_logger().setLevel(logging.ERROR)
 
     pbar = new_progress_bar(examples, 'Training')
     for a in agents:
@@ -38,7 +57,7 @@ def train_loop(agent_class, train, val, test, batch_size, model_pars, graph_pars
         with tf.device(device or 'CPU'):
             n = a.start()
         update_pb(pbar, agents, n, start_time)
-    _, pbar, round_num, total_examples = checkpoint(pbar, agents, round_num, examples, total_examples)
+    _, pbar, round_num, total_examples = checkpoint(pbar, agents, round_num, examples, total_examples, **print_args)
 
     while total_examples < max_examples:
         if issubclass(agent_class, SyncAgent):
@@ -60,21 +79,30 @@ def train_loop(agent_class, train, val, test, batch_size, model_pars, graph_pars
             with tf.device(device or 'CPU'):
                 pbar.update(agent.train_fn())
 
-        is_check, pbar, round_num, total_examples = checkpoint(pbar, agents, round_num, examples, total_examples)
+        is_check, pbar, round_num, total_examples = checkpoint(pbar, agents, round_num, examples, total_examples, **print_args)
         if is_check:
             graph_manager.check_time_varying(round_num)
 
     pbar.close()
     print("Train time: {}".format(time_elapsed_info(start_time)), flush=True)
 
-    filename = "{}_{}A_{}E_{}B_{}V_{}_{}".format(
-        agent_class.__name__, len(agents), epochs, batch_size, model_pars['model_v'],
-        graph_manager.graph_info().replace(': ', '').replace(' ', '').replace(',', '_'),
+    filename = "{}_{}A_{}E_{}B_{}_{}".format(
+        agent_class.__name__, len(agents), epochs, agent_data_pars[0]['batch_size'],
+        graph_pars['graph_type'] + '(' + ('' if graph_pars['directed'] else 'un') + 'directed-' + str(graph_pars['num_neighbors']) + ')',
         datetime.now().strftime("%d-%m-%Y_%H_%M"))
-    dump_acc_hist('log/' + filename + '.json', agents, graph_manager.as_numpy_array())
+
+    sim_pars['sim_time'] = time.time() - start_time
+    dump_acc_hist('log/' + filename + '.json',
+                  agents,
+                  graph_manager.as_numpy_array(),
+                  {'agent_pars': agent_pars,
+                   'agent_data_pars': agent_data_pars,
+                   'model_pars': model_pars,
+                   'graph_pars': graph_pars,
+                   'sim_pars': sim_pars})
 
 
-def checkpoint(pbar, agents, round_num, examples, total_examples):
+def checkpoint(pbar, agents, round_num, examples, total_examples, **print_args):
     if pbar.n >= pbar.total:
         diff = pbar.n - pbar.total
         pbar.close()
@@ -83,7 +111,7 @@ def checkpoint(pbar, agents, round_num, examples, total_examples):
         round_num += 1
         msg_count = sum([a.hist_total_messages for a in agents])
         print("\nMsgs: {}\tRound: {}\t".format(msg_count, round_num), end='')
-        calc_agents_metrics(agents, round(total_examples / examples))
+        calc_agents_metrics(agents, round(total_examples / examples), **print_args)
 
         pbar = new_progress_bar(examples, 'Training')
         pbar.update(diff)
