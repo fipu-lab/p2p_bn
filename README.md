@@ -10,7 +10,7 @@ Before running, prepared datasets need to be downloaded from [google drive](http
 The datasets should be unzipped in the following directories:
 - CoNNL-2003 (conll.zip) at directory `data/ner/conll/`
 - Few-NERD (few_nerd.zip) at directory `data/ner/few_nerd/`
-- Reddit (bert-reddit.zip) at directory data/reddit/bert_clients`
+- Reddit (bert-reddit.zip) at directory `data/reddit/bert_clients`
 - StackOverflow (bert-stackoverflow.zip) at directory `data/stackoverflow/bert_clients`
 
 <br>
