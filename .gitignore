@@ -115,7 +115,7 @@ dmypy.json
 
 
 
-models/*
+
 *.DS_STORE
 .idea/*
 *.h5
