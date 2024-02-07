@@ -3,7 +3,6 @@ from p2p.agents.async_agent import *
 
 
 class P2PAgent(AsyncAgent):
-    # noinspection PyDefaultArgument
     def __init__(self,
                  early_stopping=True,
                  increase_momentum=False,
@@ -25,6 +24,13 @@ class P2PAgent(AsyncAgent):
         self.train_rounds = 1
         self.received_msg = False
         self.hist_ind = 1
+
+        if self.has_private:
+            # self._tf_train_fn = tf.function(P2PAgent._model_train_dml)
+            if self.use_tf_function:
+                self._tf_train_fn = tf.function(model_train_student_teacher)
+            else:
+                self._tf_train_fn = model_train_student_teacher
 
     @property
     def _has_bn_layers(self):
@@ -48,9 +54,9 @@ class P2PAgent(AsyncAgent):
 
     def _train_on_batch(self, x, y):
         if self.has_private:
-            P2PAgent._model_train_dml(self.model, self.private_model, x, y, self.kl_loss)
+            self._tf_train_fn(self.model, self.private_model, x, y, self.kl_loss)
         else:
-            Agent._model_train_batch(self.model, x, y)
+            self._tf_train_fn(self.model, x, y)
 
     def train_epoch(self):
         if self.train_rounds < 1:
@@ -149,11 +155,12 @@ class P2PAgent(AsyncAgent):
             self._add_hist_metric(self._eval_val_metrics(self.private_model), "val_private", metrics_names)
             self._add_hist_metric(self._eval_test_metrics(self.private_model), "test_private", metrics_names)
 
-            for key, dataset in zip(["train_ensemble", "val_ensemble", "test_ensemble"], [self.train, self.val, self.test]):
-                self._add_hist_metric(
-                    self.model_pars['model_mod'].eval_ensemble_metrics([self.model, self.private_model], dataset, self.private_model_pars['ensemble_metrics']),
-                    key, metrics_names
-                )
+            if 'ensemble_metrics' in self.private_model_pars and self.private_model_pars['ensemble_metrics'] is not None:
+                for key, dataset in zip(["train_ensemble", "val_ensemble", "test_ensemble"], [self.train, self.val, self.test]):
+                    self._add_hist_metric(
+                        self.model_pars['model_mod'].eval_ensemble_metrics([self.model, self.private_model], dataset, self.private_model_pars['ensemble_metrics']),
+                        key, metrics_names
+                    )
 
     @property
     def hist_train_private_metric(self, metric_name='acc'):
@@ -204,3 +211,47 @@ class P2PAgent(AsyncAgent):
             self.model_pars['model_mod'].save(self.private_model, 'p2p_models/{}/agent_{}_private'.format(self.__class__.__name__, self.id))
             if not save_only:
                 self.private_model = True
+
+
+def distillation_loss(teacher_logits, student_logits, student_loss, distance_fn, temperature, alpha):
+    dist = distance_fn(
+        tf.math.softmax(student_logits / temperature, axis=-1),
+        tf.math.softmax(teacher_logits / temperature, axis=-1)
+    )
+    loss_kd = tf.math.scalar_mul(temperature, dist)
+    loss = alpha * student_loss + (1. - alpha) * loss_kd
+    return loss
+
+
+def model_train_student(student_model, teacher_model, x, y, kl_loss, temperature=7, alpha=0.5):
+    t_logits = teacher_model(x, training=False)
+    with tf.GradientTape() as tape:
+        s_logits = student_model(x, training=True)
+        s_loss = student_model.loss(y, s_logits)
+        loss = distillation_loss(t_logits, s_logits, s_loss, kl_loss, temperature, alpha)
+
+    grads = tape.gradient(loss, student_model.trainable_variables)
+    student_model.optimizer.apply_gradients(zip(grads, student_model.trainable_variables))
+    student_model.compiled_metrics.update_state(y, s_logits)
+    return loss
+
+
+def model_train_student_teacher(teacher_model, student_model, x, y, kl_loss, temperature=7, alpha=0.5):
+    with tf.GradientTape(persistent=True) as tape:
+        t_logits = teacher_model(x, training=True)
+        s_logits = student_model(x, training=True)
+
+        t_loss = teacher_model.loss(y, t_logits)
+        s_loss = student_model.loss(y, s_logits)
+
+        s_total_loss = distillation_loss(t_logits, s_logits, s_loss, kl_loss, temperature, 1-alpha) / 2.0
+        t_total_loss = distillation_loss(s_logits, t_logits, t_loss, kl_loss, temperature, alpha) / 2.0
+
+    s_grads = tape.gradient(s_total_loss, student_model.trainable_variables)
+    student_model.optimizer.apply_gradients(zip(s_grads, student_model.trainable_variables))
+    student_model.compiled_metrics.update_state(y, s_logits)
+
+    t_grads = tape.gradient(t_total_loss, teacher_model.trainable_variables)
+    teacher_model.optimizer.apply_gradients(zip(t_grads, teacher_model.trainable_variables))
+    teacher_model.compiled_metrics.update_state(y, t_logits)
+    return tf.divide(tf.add(t_total_loss, s_total_loss), 2)

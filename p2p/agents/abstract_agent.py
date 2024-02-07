@@ -3,11 +3,12 @@ import tensorflow as tf
 
 class Agent:
     # noinspection PyDefaultArgument
-    def __init__(self, data, model, graph=None, data_pars=None, eval_batch_size=50):
+    def __init__(self, data, model, graph=None, data_pars=None, use_tf_function=True, eval_batch_size=50):
 
         self.data_pars = data_pars
         self.batch_size = data_pars['batch_size']
         self.eval_batch_size = eval_batch_size
+        self.use_tf_function = use_tf_function
         train, val, test = data.pop('train'), data.pop('val'), data.pop('test')
         self.train = self._create_dataset(train[0], train[1], self.batch_size, self.data_pars.get('caching', False))
         self.val = self._create_dataset(val[0], val[1], self.eval_batch_size, True)
@@ -27,8 +28,11 @@ class Agent:
         self.hist = {"examples":      [0],
                      "train_len":     self.train_len,
                      "useful_msg":    [0],
+                     "sent_msg":      [0],
                      "useless_msg":   [0],
                      "model_name":    self.model.name,
+                     "sent_to":       [[]],
+                     "received_from": [[]],
                      }
         if 'dataset_name' in self._data:
             self.hist['dataset_name'] = self._data['dataset_name']
@@ -37,6 +41,12 @@ class Agent:
         self.iter = None
 
         self.id = 0
+
+        # self._tf_train_fn = None
+        if use_tf_function:
+            self._tf_train_fn = tf.function(Agent._model_train_batch)
+        else:
+            self._tf_train_fn = Agent._model_train_batch
 
     @staticmethod
     def _create_model(m_pars, ignored_keys):
@@ -108,7 +118,7 @@ class Agent:
         return self.model.get_weights()
 
     def _train_on_batch(self, x, y):
-        Agent._model_train_batch(self.model, x, y)
+        self._tf_train_fn(self.model, x, y)
         self.trained_examples += len(y)
         return len(y)
 
@@ -154,6 +164,9 @@ class Agent:
 
     def receive_message(self, other_agent):
         self.hist["useful_msg"][-1] += 1
+        other_agent.hist["sent_msg"][-1] += 1
+        self.hist["received_from"][-1].append(other_agent.id)
+        other_agent.hist["sent_to"][-1].append(self.id)
         return True
 
     def reject_message(self, other_agent):
@@ -169,10 +182,22 @@ class Agent:
     def _eval_test_metrics(self, m):
         return self.model_pars['model_mod'].eval_model_metrics(m, self.test)
 
+    def eval_model(self, model, dataset, metrics=None):
+        res_dict = self.model_pars['model_mod'].eval_model_metrics(model, dataset)
+        if metrics is not None and len(metrics) > 0:
+            res_dict = {k: v for k, v in res_dict.items() if k in metrics}
+        return res_dict
+
+    def eval_model_loss(self, model, dataset):
+        return self.model_pars['model_mod'].eval_model_loss(model, dataset)
+
     def calc_new_metrics(self, metrics_names=None):
         self.hist["examples"].append(self.trained_examples)
         self.hist["useful_msg"].append(0)
+        self.hist["sent_msg"].append(0)
         self.hist["useless_msg"].append(0)
+        self.hist["received_from"].append([])
+        self.hist["sent_to"].append([])
 
         self._add_hist_metric(self._eval_train_metrics(self.model), "train_model", metrics_names)
         self._add_hist_metric(self._eval_val_metrics(self.model), "val_model", metrics_names)

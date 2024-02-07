@@ -92,3 +92,6 @@ class GoSGDAgent(SyncAgent):
 
     def sync_parameters(self):
         pass
+
+    def update_parameters(self):
+        pass

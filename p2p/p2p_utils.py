@@ -3,6 +3,11 @@ import numpy as np
 import tensorflow as tf
 
 
+def mode(arr):
+    vals, counts = np.unique([round(a) for a in arr], return_counts=True)
+    return vals[counts == max(counts)][0]
+
+
 def print_acc(accs, info):
     accs = np.array(accs or [0])
     if len(accs[accs > 1]):
@@ -105,4 +110,4 @@ def dump_acc_hist(filename, agents, graph, info={}):
                 info[k] = {ki: str(vi) for ki, vi in v.items()}
             else:
                 info[k] = str(v)
-    save_json(filename, {'agents': {a.id: a.hist for a in agents}, 'graph': graph, 'info': info})
+    return save_json(filename, {'agents': {a.id: a.hist for a in agents}, 'graph': graph, 'info': info})

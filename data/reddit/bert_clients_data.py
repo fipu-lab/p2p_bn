@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 from models.zoo.bert.tokenization import FullTokenizer
 import h5py
+from data.util import random_choice_with_seed
 
 
 class InputFeatures(object):
@@ -130,23 +131,59 @@ def parse_reddit_file(reddit_filename='reddit_0_train.json', seq_len=10, tokeniz
 """
 
 
+def parse_bert_agents(json_data):
+    j_agents_x, j_agents_y = [], []
+    for key in list(json_data.keys()):
+        j_agent_data_x = []
+        j_agent_data_y = []
+        for sx, sy in zip(json_data[str(key)]['x'], json_data[str(key)]['y']):
+            s = ' '.join([' '.join(l) for l in sx])
+            s = clean_text(s)
+            j_agent_data_x.append(s)
+            j_agent_data_y.append(sy['subreddit'])
+
+        j_agents_x.append(j_agent_data_x)
+        j_agents_y.append(j_agent_data_y)
+    return j_agents_x, j_agents_y
+
+
 # Joined code from two functions to save data as parsing to reduce memory footprint
-def parse_and_save_reddit_file(reddit_filename='reddit_0_train.json', seq_len=128, tokenizer_path='data/ner/vocab.txt', max_client_num=1_000):
-    os.makedirs('data/reddit/bert_clients/', exist_ok=True)
-    pre_filename = reddit_filename.split('.')[0]
+def parse_and_save_reddit_file(reddit_filename='reddit_0_train.json', seq_len=128, tokenizer_path='data/ner/vocab.txt', directory='bert_clients', max_client_num=1_000):
+    os.makedirs('data/reddit/{}/'.format(directory), exist_ok=True)
+    pre_filename = 'clients_' + reddit_filename.split('.')[0]
     tokenizer = FullTokenizer(tokenizer_path, True)
     reddit_filepath = 'data/reddit/source/data/reddit_leaf/' + reddit_filename.split('.')[0].split('_')[-1] + '/' + reddit_filename
     with open(reddit_filepath, 'r') as inf:
         cdata = json.load(inf)
     json_data = cdata['user_data']
 
-    j_agents_x, j_agents_y, part = [], [], 0
+    j_agents_x, j_agents_y = parse_bert_agents(json_data)
+    del json_data
+    process_bert_agents(j_agents_x, j_agents_y, seq_len, tokenizer, max_client_num, directory, pre_filename)
+
+
+def process_bert_agents(j_agents_x, j_agents_y, seq_len=128, tokenizer=None, max_client_num=1_000, directory='bert_clients', pre_filename='clients_'):
+    agents_x, agents_y, part = [], [], 0
 
     def save_part():
-        save_agents = [(x, y) for x, y in zip(j_agents_x, j_agents_y)]
-        save_to_file(save_agents, 'data/reddit/bert_clients/clients_{}_{}SL_{}CN_{}PT.h5'.format(pre_filename, seq_len, max_client_num, part))
+        save_agents = [(x, y) for x, y in zip(agents_x, agents_y)]
+        save_to_file(save_agents, 'data/reddit/{}/{}_{}SL_{}CN_{}PT.h5'.format(directory, pre_filename, seq_len, max_client_num, part))
         return [], [], part + 1
 
+    for ax, ay in zip(j_agents_x, j_agents_y):
+        agent_data_x, agent_data_y = [], []
+        for sx, sy in zip(ax, ay):
+            features = convert_nwp_examples_to_features(sx.split('.'), seq_len=seq_len, tokenizer=tokenizer)
+            agent_data_x.extend(features)
+            agent_data_y.append(sy)
+
+        agents_x.append(agent_data_x)
+        agents_y.append(agent_data_y)
+
+        if len(agents_x) == max_client_num:
+            agents_x, agents_y, part = save_part()
+
+    """
     for key in list(json_data.keys()):
         j_agent_data_x = []
         j_agent_data_y = []
@@ -161,6 +198,7 @@ def parse_and_save_reddit_file(reddit_filename='reddit_0_train.json', seq_len=12
         j_agents_y.append(j_agent_data_y)
         if len(j_agents_x) == max_client_num:
             j_agents_x, j_agents_y, part = save_part()
+    """
 
     if len(j_agents_x) > 0:
         j_agents_x, j_agents_y, part = save_part()
@@ -225,16 +263,18 @@ def load_from_file(filename):
     return data_clients
 
 
-def load_clients(data_type, client_num, seq_len=128, max_client_num=1_000):
+def load_clients(data_type, client_num, seq_len=128, max_client_num=1_000, directory='bert_clients'):
     reddit_index, part = 0, 0
     clients = []
 
     def parsed_name():
-        return 'data/reddit/bert_clients/clients_reddit_{}_{}_{}SL_{}CN_{}PT.h5'\
-            .format(reddit_index, data_type, seq_len, max_client_num, part)
+        return 'data/reddit/{}/clients_reddit_{}_{}_{}SL_{}CN_{}PT.h5'\
+            .format(directory, reddit_index, data_type, seq_len, max_client_num, part)
 
-    while len(clients) < client_num:
+    while len(clients) < client_num or client_num < 0:
         # print("Loading", parsed_name())
+        if client_num < 0 and not os.path.exists(parsed_name()):
+            return clients
         file_clients = load_from_file(parsed_name())
         part += 1
         if not os.path.exists(parsed_name()):
@@ -259,23 +299,18 @@ def unpack_features(features, sequenced=False):
         )
 
 
-def load_client_datasets(num_clients=1_000, seq_len=12, seed=608361, train_examples_range=(700, 20_000)):
-    train = load_clients('train', num_clients, seq_len)
-    val = load_clients('val', num_clients, seq_len)
-    test = load_clients('test', num_clients, seq_len)
+def load_client_datasets(num_clients=1_000, seq_len=12, seed=608361, train_examples_range=(700, 20_000), directory='bert_clients'):
+    train = load_clients('train', num_clients, seq_len, directory=directory)
+    val = load_clients('val', num_clients, seq_len, directory=directory)
+    test = load_clients('test', num_clients, seq_len, directory=directory)
     metadata = []
     for tr, v, ts in zip(train, val, test):
         subreddits = [d.decode() for d in tr[1]] + [d.decode() for d in v[1]] + [d.decode() for d in ts[1]]
-        metadata.append(np.unique(subreddits))
+        metadata.append(subreddits)
 
     choices = [i for i, tr in enumerate(train) if train_examples_range[0] <= len(tr[0]) <= train_examples_range[1]]
-    if seed is not None:
-        from numpy.random import MT19937
-        from numpy.random import RandomState, SeedSequence
-        rs = RandomState(MT19937(SeedSequence(seed)))
-        clients_ids = rs.choice(choices, size=num_clients, replace=False)
-    else:
-        clients_ids = np.random.choice(choices, size=num_clients, replace=False)
+
+    clients_ids = random_choice_with_seed(choices, num_clients, seed)
 
     train = [unpack_features(el[0]) for ei, el in enumerate(train) if ei in clients_ids]
     val = [unpack_features(el[0]) for ei, el in enumerate(val) if ei in clients_ids]

@@ -11,3 +11,11 @@ class SyncAgent(Agent):
         :return:
         """
         pass
+
+    @abstractmethod
+    def update_parameters(self):
+        """
+            Method to be called after sync_parameters
+        :return:
+        """
+        pass

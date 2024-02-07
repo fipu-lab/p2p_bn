@@ -136,7 +136,7 @@ def plot_items(ax, x_axis, viz_dict, title=None, y_label='Test UA (%)', colors=N
         ax.plot(x_time, t_acc, **args, label=k, linewidth=1)
         if accs is not None:
             min_acc, max_acc = calc_fill_between(accs)
-            ax.fill_between(x_time, max_acc, min_acc, alpha=0.1, **args)
+            ax.fill_between(x_time, max_acc, min_acc, alpha=0.05, **args)
         legend.append(k)
         if x_axis2 is not None:
             x_time2, t_acc2, accs2 = parse_timeline(k, v, x_axis2, agg_fn,  metric[i] if isinstance(metric, list) else metric)
@@ -163,6 +163,14 @@ def plot_items(ax, x_axis, viz_dict, title=None, y_label='Test UA (%)', colors=N
     ax.set_ylabel(y_label)
     ax.grid()
     ax.legend(legend, loc='lower right')
+    # ax.legend(legend)
+    """
+    ax.set_xlabel(LABELS[x_axis])
+    if title == 'IID' or title == 'praktični ne-IID':
+        ax.legend(legend, loc='lower right')
+    elif title == 'patološki ne-IID':
+        ax.legend(legend, loc='center right')
+    # """
     ax.yaxis.set_major_locator(MultipleLocator())
     # ax.text(0.5, -.5, string.ascii_lowercase[ax.get_subplotspec().colspan.start] + ")")
     if title:
@@ -189,9 +197,10 @@ def side_by_side(viz_dict, agg_fn=np.average, fig_size=(10, 5), n_rows=1, axis_l
         axs = np.array([axs])
     axs = axs.flatten()
     for ax, (plot_k, plot_v) in zip(axs, viz_dict.items()):
+        metrics = plot_v.get('metric', 'test_model-accuracy_no_oov')
         plot_items(ax, plot_v['x_axis'], plot_v['viz'], title=plot_k, y_label=plot_v.get('y_label', 'Test UA (%)'),
                    colors=plot_v.get('colors', None), agg_fn=agg_fn,
-                   metric=plot_v.get('metric', 'test_model-accuracy_no_oov'))
+                   metric=metrics)
     max_y = round(max([ax.get_ylim()[1] for ax in axs]))
     min_y = 0
     stepsize = 1
@@ -242,11 +251,12 @@ if __name__ == '__main__':
         '': {
             'x_axis': 'epoch',
             # 'metric': 'test_model-sparse_categorical_accuracy',
+            'metric': 'test_model-accuracy_no_oov',
             'viz': {
-                'Reddit': ['P2PAgent_10A_20E_50B_sparse-1(directed-3)_25-10-2022_18_49',
-                           'P2PAgent_10A_21E_50B_sparse-1(directed-3)_26-10-2022_10_00'],
-                'Sparse': ['P2PAgent_10A_20E_50B_sparse(directed-3)_25-10-2022_18_43',
-                           'P2PAgent_10A_20E_50B_sparse(directed-3)_26-10-2022_09_42']
+                'DIPLE-4': 'DiPLeAgent_200A_70E_50B_sparse(directed-3)_05-02-2024_00_25',
+                'DIPLE-2': 'DiPLeAgent_100A_30E_50B_sparse(directed-3)_05-02-2024_05_25',
+                'DIPLE-21': 'DiPLeAgent_100A_20E_50B_sparse(directed-3)_05-02-2024_04_40',
+                'L2C': 'L2CAgent_200A_24E_50B_sparse(directed-3)_05-02-2024_07_10',
             },
         },
     })

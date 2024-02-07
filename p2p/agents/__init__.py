@@ -6,3 +6,10 @@ from .abstract_agent import Agent
 from .sync_agent import SyncAgent
 from .async_agent import AsyncAgent
 from .bert_agent import BertAgent
+from .pens_agent import PensAgent
+from .dac_agent import DacAgent
+from .gossip_pull_agent import GossipPullAgent
+from .panm_agent import PanmAgent
+from .d_cliques_agent import DCliqueAgent
+from .diple_agent import DiPLeAgent
+from .l2c_agent import L2CAgent

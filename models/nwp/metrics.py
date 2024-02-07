@@ -45,7 +45,8 @@ class MaskedSparseF1Score(F1Score):
         y_true = tf.reshape(y_true, [-1])
         y_pred = tf.reshape(y_pred, [-1, num_classes])
         mask = tf.reshape(mask, [-1])
-        y_true = tf.keras.utils.to_categorical(y_true, num_classes=num_classes)
+        # y_true = tf.keras.utils.to_categorical(y_true, num_classes=num_classes)
+        y_true = tf.one_hot(y_true, num_classes)
         super().update_state(y_true, y_pred, mask)
 
 
@@ -63,7 +64,8 @@ class MaskedSparsePrecision(Precision):
         y_true = tf.reshape(y_true, [-1])
         y_pred = tf.reshape(y_pred, [-1, num_classes])
         mask = tf.reshape(mask, [-1])
-        y_true = tf.keras.utils.to_categorical(y_true, num_classes=num_classes)
+        # y_true = tf.keras.utils.to_categorical(y_true, num_classes=num_classes)
+        y_true = tf.one_hot(y_true, num_classes)
         super().update_state(y_true, y_pred, mask)
 
 
@@ -81,5 +83,6 @@ class MaskedSparseRecall(Recall):
         y_true = tf.reshape(y_true, [-1])
         y_pred = tf.reshape(y_pred, [-1, num_classes])
         mask = tf.reshape(mask, [-1])
-        y_true = tf.keras.utils.to_categorical(y_true, num_classes=num_classes)
+        # y_true = tf.keras.utils.to_categorical(y_true, num_classes=num_classes)
+        y_true = tf.one_hot(y_true, num_classes)
         super().update_state(y_true, y_pred, mask)

@@ -3,6 +3,33 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 
 
+def shuffle_samples(x_samples, y_samples):
+    assert len(x_samples) == len(y_samples)
+    indices = np.arange(len(y_samples))
+    np.random.shuffle(indices)
+    return [x_samples[j] for j in indices], [y_samples[j] for j in indices]
+
+
+def shuffle_clients_data(ds_x, ds_y):
+    assert len(ds_x) == len(ds_y)
+    for i in range(len(ds_y)):
+        ds_x[i], ds_y[i] = shuffle_samples(ds_x[i], ds_y[i])
+    return ds_x, ds_y
+
+
+def split_uniform_per_label(x_data, y_data, num_splits):
+    ds_x = [[] for _ in range(num_splits)]
+    ds_y = [[] for _ in range(num_splits)]
+    for label in np.unique(y_data):
+        s = np.array_split(np.argwhere(y_data == label), num_splits)
+        for i in range(num_splits):
+            si = np.squeeze(s[i])
+            ds_x[i].extend(x_data[si])
+            ds_y[i].extend(y_data[si])
+
+    return shuffle_clients_data(ds_x, ds_y)
+
+
 def load_clients_data(num_clients=100, mode='IID'):
     # Mode: IID, pathological non-IID, practical non-IID
     (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -14,10 +41,15 @@ def load_clients_data(num_clients=100, mode='IID'):
     x_train = np.expand_dims(x_train, -1)
     x_test = np.expand_dims(x_test, -1)
     if mode == 'IID':
+
+        c_x_train, c_y_train = split_uniform_per_label(x_train, y_train, num_clients)
+        c_x_test, c_y_test = split_uniform_per_label(x_test, y_test, num_clients)
+        """
         c_x_train = np.array_split(x_train, num_clients)
         c_y_train = np.array_split(y_train, num_clients)
         c_x_test = np.array_split(x_test, num_clients)
         c_y_test = np.array_split(y_test, num_clients)
+        """
     elif mode == 'pathological non-IID':
         # BrendanMcMahan2017
         # Non-IID, where we first sort the data by digit label,
@@ -131,10 +163,14 @@ def load_clients_data(num_clients=100, mode='IID'):
     else:
         raise ValueError("Invalid mode")
 
+    c_x_train, c_y_train = shuffle_clients_data(c_x_train, c_y_train)
     c_train = list(zip(c_x_train, c_y_train))
     c_test = list(zip(c_x_test, c_y_test))
+    c_x_val, c_y_val = split_uniform_per_label(x_test, y_test, num_clients)
+    c_val = list(zip(c_x_val, c_y_val))
     # c_val = list(zip(np.array_split(x_test, num_clients), np.array_split(y_test, num_clients)))
     # c_val = [([], []) for _ in range(len(c_train))]
+    """
     c_val = []
     for (ctrx, ctry), (_, ctesty) in zip(c_train, c_test):
         image_generator = ImageDataGenerator(
@@ -147,10 +183,11 @@ def load_clients_data(num_clients=100, mode='IID'):
         image_generator.fit(ctrx, augment=True)
         x_augmented, y_augmented = image_generator.flow(ctrx[rnd_ind], ctry[rnd_ind], batch_size=len(rnd_ind), shuffle=False).next()[0:2]
         c_val.append([x_augmented, y_augmented])
+    """
     data = {
         "train": c_train,
         "val": c_val,
         "test": c_test,
-        "dataset_name": 'mnist-{}'.format(mode),
+        "dataset_name": ['mnist-{}'.format(mode)] * num_clients,
     }
     return data

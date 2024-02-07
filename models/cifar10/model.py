@@ -8,7 +8,7 @@ from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.optimizers import Adam
 
 
-def create_model(model_v=1, lr=0.001, decay=0, num_classes=10, input_shape=(32, 32, 3), do_compile=True,
+def create_model(model_v=0, lr=0.001, decay=0, num_classes=10, input_shape=(32, 32, 3), do_compile=True,
                  default_weights=True, scale=False, center=False, momentum=0.9):
     if model_v == 0:
         model = Sequential(
@@ -19,7 +19,6 @@ def create_model(model_v=1, lr=0.001, decay=0, num_classes=10, input_shape=(32, 
                 MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
                 Flatten(),
                 Dense(120, activation='relu'),
-                Dense(84, activation='relu'),
                 Dense(num_classes, activation='softmax')
             ], "model_{}_{}".format(model_v, next_model_id('cifar10')))
     elif model_v == 100:

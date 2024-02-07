@@ -74,7 +74,7 @@ def add_titles(fig):
     box_style = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     # titles = ("Multi-task without BERT freezing", "Multi-task with BERT freezing")
     pad = " " * 100 # 83
-    titles = (pad + "  MT  " + pad, pad + "MT-BF" + pad)
+    titles = (pad + "  MT  " + pad, pad + "MT-EF" + pad)
     fig.text(x=0.5, y=0.95, s=titles[0], fontdict=font, bbox=box_style, ha='center')
     fig.text(x=0.5, y=0.44, s=titles[1], fontdict=font, bbox=box_style, ha='center')
 
@@ -82,7 +82,7 @@ def add_titles(fig):
 def exp_1():
     colors = ['r', 'g', 'b', 'indigo']  # , 'orange']
     viz = {
-        'Reddit (NWP)': {
+        'Reddit (MTP)': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'reddit-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -105,7 +105,7 @@ def exp_1():
                 # 'Reddit+StackOverflow (mono)': ['mt/sparse/avg/BertAgent_40A_300E_50B_sparse(directed-3)_02-01-2023_04_48'],
             },
         },
-        'StackOverflow (NWP)': {
+        'StackOverflow (MTP)': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'stackoverflow-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -183,7 +183,7 @@ def exp_1():
     # """
 
     # MT
-    viz['Reddit (NWP) '] = {
+    viz['Reddit (MTP) '] = {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'reddit-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -205,7 +205,7 @@ def exp_1():
                                     'mt/sparse/mt/BertAgent_40A_300E_50B_sparse(directed-3)_09-01-2023_18_11'],
             }
     }
-    viz['StackOverflow (NWP) '] = {
+    viz['StackOverflow (MTP) '] = {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'stackoverflow-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -343,7 +343,7 @@ def exp_1():
 def exp_2():
     colors = ['r', 'g', 'b', 'indigo']  # , 'orange']
     viz = {
-        'Reddit (NWP)': {
+        'Reddit (MTP)': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'reddit-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -366,7 +366,7 @@ def exp_2():
                 # 'Reddit+StackOverflow (mono)': ['mt/cluster/avg/BertAgent_40A_300E_50B_sparse_clusters(directed-2)_03-01-2023_16_21'],
             }
         },
-        'StackOverflow (NWP)': {
+        'StackOverflow (MTP)': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'stackoverflow-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -435,7 +435,7 @@ def exp_2():
             }
         },
         #  ---- MT ----
-        'Reddit (NWP) ': {
+        'Reddit (MTP) ': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'reddit-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -457,7 +457,7 @@ def exp_2():
                                     'mt/cluster/mt/BertAgent_40A_300E_50B_sparse_clusters(directed-2)_16-01-2023_18_02'],
             },
         },
-        'StackOverflow (NWP) ': {
+        'StackOverflow (MTP) ': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'stackoverflow-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -609,7 +609,7 @@ def exp_2():
 def exp_4x():
     colors = ['r', 'g', 'b', 'indigo']  # , 'orange']
     viz = {
-        'Reddit (NWP)': {
+        'Reddit (MTP)': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'reddit-bert-nwp->test_model-sparse_categorical_accuracy',
@@ -623,7 +623,7 @@ def exp_4x():
                                                         'mt/4x/BertAgent_80A_300E_50B_sparse_clusters(directed-2)_11-01-2023_03_45']
             },
         },
-        'StackOverflow (NWP)': {
+        'StackOverflow (MTP)': {
             'x_axis': 'epoch',
             'colors': colors,
             'metric': 'stackoverflow-bert-nwp->test_model-sparse_categorical_accuracy',

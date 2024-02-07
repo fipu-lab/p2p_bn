@@ -77,3 +77,5 @@ class D2Agent(SyncAgent):
         # self.msg_q.clear()
         self.model_q = None
 
+    def update_parameters(self):
+        pass

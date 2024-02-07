@@ -1,6 +1,22 @@
 This is a repository of for papers:
  - [Peer-to-peer Deep Learning With Non-IID Data](https://www.sciencedirect.com/science/article/abs/pii/S0957417422021777)
- - [Multi-task peer-to-peer learning using the BERT transformer model](https://) -> Under review
+ - [Multi-task peer-to-peer learning using the BERT transformer model](https://www.sciencedirect.com/science/article/abs/pii/S0167739X23004053)
+ - [Exploring Autonomous Personalized Peer Connection Creation for Peer-to-Peer Learning in Non-IID Environments](https://) -> **Under Review**
+
+---
+
+# Exploring Autonomous Personalized Peer Connection Creation for Peer-to-Peer Learning in Non-IID Environments
+
+The code can be run through [notebooks](/notebooks) with names starting with **Peer-**.
+Before running, prepared datasets need to be downloaded from [google drive](https://drive.google.com/drive/folders/1p1RqD0eeTMxXgyFB7WxVgSXEmkHMqPdV?usp=share_link).
+The datasets should be unzipped in the following directories:
+- Reddit (grouped by reddit topic) (clients_category.zip) at directory `data/reddit/`
+
+All result files of the experiments can be found on a shared [google drive](https://drive.google.com/drive/folders/1wu21lUgfCDK8_h8YoJAevGZjn14kyWLV?usp=sharing) and can also be reproduced following instructions bellow. To visualise existing results, use [`plot/conn_viz.py`](plot/conn_viz.py) and place the downloaded data (conns.zip) in `log/` directory.
+
+<br>
+<br>
+
 
 # Multi-task peer-to-peer learning using the BERT transformer model
 
@@ -12,6 +28,8 @@ The datasets should be unzipped in the following directories:
 - Few-NERD (few_nerd.zip) at directory `data/ner/few_nerd/`
 - Reddit (bert-reddit.zip) at directory `data/reddit/bert_clients`
 - StackOverflow (bert-stackoverflow.zip) at directory `data/stackoverflow/bert_clients`
+
+All result files of the experiments can be found on a shared [google drive](https://drive.google.com/drive/folders/1wu21lUgfCDK8_h8YoJAevGZjn14kyWLV?usp=sharing) and can also be reproduced following instructions bellow. To visualise existing results, use [`plot/mt_viz.py`](plot/mt_viz.py) and place the downloaded data (mt.zip) in `log/` directory.
 
 <br>
 <br>
@@ -46,7 +64,7 @@ This good performance is due to using a variant of early stopping by only traini
 
 
 
-All result files of the experiments can be found on a shared [google drive](https://drive.google.com/drive/folders/1wu21lUgfCDK8_h8YoJAevGZjn14kyWLV?usp=sharing) and can also be reproduced following instructions bellow. To visualise existing results, use [`plot/experiment_viz.py`](plot/experiment_viz.py) and place the downloaded data in `log/` directory.
+All result files of the experiments can be found on a shared [google drive](https://drive.google.com/drive/folders/1wu21lUgfCDK8_h8YoJAevGZjn14kyWLV?usp=sharing) and can also be reproduced following instructions bellow. To visualise existing results, use [`plot/experiment_viz.py`](plot/experiment_viz.py) and place the downloaded (results.zip) data in `log/` directory.
 
 ## Running simulations
 

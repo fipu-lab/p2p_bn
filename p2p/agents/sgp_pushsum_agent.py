@@ -81,3 +81,6 @@ class SGPPushSumAgent(SyncAgent):
         self.w_q = 0
         self.model_q = None
         # self.msg_q.clear()
+
+    def update_parameters(self):
+        pass

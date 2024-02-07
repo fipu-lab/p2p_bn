@@ -79,11 +79,15 @@ def save_json(filename, json_dict):
     if os.path.dirname(filename) != '':
         os.makedirs(os.path.dirname(filename), exist_ok=True)
     num = ''
-    while os.path.exists(filename + num):
+
+    def parsed_name():
+        return filename.split('.json')[0] + num + '.json'
+    while os.path.exists(parsed_name()):
         if num == '':
             num = '_(1)'
         else:
-            num = '_({})'.format(num[num.index('(')+1:-1])
-    with open(filename + num, "w") as outfile:
+            num = '_({})'.format(int(num[num.index('(')+1:-1]) + 1)
+    with open(parsed_name(), "w") as outfile:
         json.dump(json_dict, outfile, indent=None, cls=NumpyValuesEncoder)
-    print("Saved to", filename)
+    print("Saved to", parsed_name())
+    return parsed_name()
