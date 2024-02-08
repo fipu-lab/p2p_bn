@@ -2,11 +2,11 @@ This is a repository of for papers:
  - [Peer-to-peer Deep Learning With Non-IID Data](https://www.sciencedirect.com/science/article/abs/pii/S0957417422021777)
  - [Multi-task peer-to-peer learning using the BERT transformer model](https://www.sciencedirect.com/science/article/abs/pii/S0167739X23004053)
  - [Evaluacija generalizacije znanja decentraliziranih agenata u okruženju heterogenih skupova podataka](https://) -> **Under Review at MIPRO conference**
- - [An Overview of Autonomous Connection Establishment Methods for Peer-to-Peer Deep Learning in Non-IID Environments](https://) -> **Under Review**
+ - [An Overview of Autonomous Connection Establishment Methods in Peer-to-Peer Deep Learning](https://) -> **Under Review**
 
 ---
 
-# Exploring Autonomous Personalized Peer Connection Creation for Peer-to-Peer Learning in Non-IID Environments
+# An Overview of Autonomous Connection Establishment Methods in Peer-to-Peer Deep Learning
 
 The code can be run through [notebooks](/notebooks) with names starting with **Peer-**.
 Before running, prepared datasets need to be downloaded from [google drive](https://drive.google.com/drive/folders/1p1RqD0eeTMxXgyFB7WxVgSXEmkHMqPdV?usp=share_link).
