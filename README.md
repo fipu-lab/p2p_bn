@@ -1,7 +1,8 @@
 This is a repository of for papers:
  - [Peer-to-peer Deep Learning With Non-IID Data](https://www.sciencedirect.com/science/article/abs/pii/S0957417422021777)
  - [Multi-task peer-to-peer learning using the BERT transformer model](https://www.sciencedirect.com/science/article/abs/pii/S0167739X23004053)
- - [Exploring Autonomous Personalized Peer Connection Creation for Peer-to-Peer Learning in Non-IID Environments](https://) -> **Under Review**
+ - [Evaluacija generalizacije znanja decentraliziranih agenata u okruženju heterogenih skupova podataka](https://) -> **Under Review at MIPRO conference**
+ - [An Overview of Autonomous Connection Establishment Methods for Peer-to-Peer Deep Learning in Non-IID Environments](https://) -> **Under Review**
 
 ---
 
@@ -17,10 +18,18 @@ All result files of the experiments can be found on a shared [google drive](http
 <br>
 <br>
 
+# Evaluacija generalizacije znanja decentraliziranih agenata u okruženju heterogenih skupova podataka
+
+The code can be run through a [notebook](/notebooks) with the name **Robustness**.
+
+All result files of the experiments can be found on a shared [google drive](https://drive.google.com/drive/folders/1wu21lUgfCDK8_h8YoJAevGZjn14kyWLV?usp=sharing) and can also be reproduced following instructions bellow. To visualise existing results, use [`plot/robust_viz.py`](plot/robust_viz.py) and place the downloaded data (rob.zip) in `log/` directory.
+
+
+
 
 # Multi-task peer-to-peer learning using the BERT transformer model
 
-This paper presents and evaluates a novel approach that utilizes the popular BERT transformer model to enable collaboration between agents learning two different learning tasks: next- word prediction and named-entity recognition. The evaluation of the studied approach revealed that collaboration among agents, even when working towards separate objectives, can result in mutual benefits, mainly when the communication between agents is carefully considered. The multi-task collaboration led to a statistically significant increase of 11.6% in the mean relative accuracy compared to the baseline results for individual tasks.
+This paper presents and evaluates a novel approach that utilizes the popular BERT transformer model to enable collaboration between agents learning two different learning tasks: next-word prediction and named-entity recognition. The evaluation of the studied approach revealed that collaboration among agents, even when working towards separate objectives, can result in mutual benefits, mainly when the communication between agents is carefully considered. The multi-task collaboration led to a statistically significant increase of 11.6% in the mean relative accuracy compared to the baseline results for individual tasks.
 The code can be run through [notebooks](/notebooks) with names starting with **BERT-**.
 Before running, prepared datasets need to be downloaded from [google drive](https://drive.google.com/drive/folders/1p1RqD0eeTMxXgyFB7WxVgSXEmkHMqPdV?usp=share_link).
 The datasets should be unzipped in the following directories:
