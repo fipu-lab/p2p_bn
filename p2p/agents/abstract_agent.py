@@ -52,9 +52,14 @@ class Agent:
     def _create_model(m_pars, ignored_keys):
         return m_pars['model_mod'].create_model(**{k: v for k, v in m_pars.items() if k not in ignored_keys})
 
-    @staticmethod
-    def _create_dataset(x, y, batch_size, use_caching=False):
-        ds = tf.data.Dataset.from_tensor_slices((x, y)).shuffle(batch_size).batch(batch_size)
+    def _create_dataset(self, x, y, batch_size, use_caching=False):
+        ds = tf.data.Dataset.from_tensor_slices((x, y))
+        if hasattr(self.data_pars['agents_data'], "post_process_dataset"):
+            dp = self.data_pars.copy()
+            dp['batch_size'] = batch_size
+            ds = self.data_pars['agents_data'].post_process_dataset(ds, dp)
+        else:
+            ds = ds.shuffle(batch_size).batch(batch_size)
         if use_caching:
             ds = ds.cache()
         return ds.prefetch(1)
@@ -131,8 +136,10 @@ class Agent:
         return self.train_len
 
     def fit(self, epochs=1):
+        tr_len = 0
         for _ in range(epochs):
-            self.train_epoch()
+            tr_len += self.train_epoch()
+        return tr_len
 
     def start(self):
         """

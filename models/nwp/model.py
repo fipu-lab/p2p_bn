@@ -34,7 +34,6 @@ def create_model(model_v=1, lr=0.001, decay=0, vocab_size=10002, embedding_size=
     if default_weights:
         assign_default_weights(model, 'nwp' + str(model_v))
 
-    compile_model(model, lr, decay)
     return model
 
 

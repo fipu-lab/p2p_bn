@@ -11,7 +11,7 @@ def mode(arr):
 def print_acc(accs, info):
     accs = np.array(accs or [0])
     if len(accs[accs > 1]):
-        print("{}\t\t{}\t\t{:.4}".format(info, sum(accs), np.mean(accs)))
+        print("{}\t\t{}\t\t{:.4}".format(info, round(sum(accs), 2), round(np.mean(accs), 2)))
     else:
         print("{}\t\t{:.3%}\t\t{:.3%}".format(info, np.average(accs), np.median(accs)))
 

@@ -1,10 +1,33 @@
-This is a repository of for papers:
+This is a repository of the following papers:
  - [Peer-to-peer Deep Learning With Non-IID Data](https://www.sciencedirect.com/science/article/abs/pii/S0957417422021777)
  - [Multi-task peer-to-peer learning using the BERT transformer model](https://www.sciencedirect.com/science/article/abs/pii/S0167739X23004053)
  - [Evaluacija generalizacije znanja decentraliziranih agenata u okruženju heterogenih skupova podataka](https://) -> **Under Review at MIPRO conference**
  - [An Overview of Autonomous Connection Establishment Methods in Peer-to-Peer Deep Learning](https://) -> **Under Review**
+ - [Sequence-to-sequence models in peer-to-peer learning: A practical application](https://) -> **Under Review**
 
 ---
+
+
+# Sequence-to-sequence models in peer-to-peer learning: A practical application
+
+The code can be run through [notebooks](/notebooks) with names starting with **ASR-**.
+To run the experiments please download `UserLibri` dataset from [https://www.kaggle.com/datasets/google/userlibri](https://www.kaggle.com/datasets/google/userlibri).
+The `UserLibri` dataset should be extracted and placed in `data/userlibri` resulting in the following hierarchy:
+```ssh
+project_root/
+│
+├── data/
+│   ├── userlibri/
+│   │   ├── UserLibri
+│   │   │   ├── audio_data
+│   │   │   ├── lm_data
+```
+
+The `LJ Speech` dataset will be automatically downloaded when running the code for the first time.  
+
+
+<br>
+<br>
 
 # An Overview of Autonomous Connection Establishment Methods in Peer-to-Peer Deep Learning
 
@@ -25,7 +48,8 @@ The code can be run through a [notebook](/notebooks) with the name **Robustness*
 All result files of the experiments can be found on a shared [google drive](https://drive.google.com/drive/folders/1wu21lUgfCDK8_h8YoJAevGZjn14kyWLV?usp=sharing) and can also be reproduced following instructions bellow. To visualise existing results, use [`plot/robust_viz.py`](plot/robust_viz.py) and place the downloaded data (rob.zip) in `log/` directory.
 
 
-
+<br>
+<br>
 
 # Multi-task peer-to-peer learning using the BERT transformer model
 
