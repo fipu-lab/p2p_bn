@@ -1,9 +1,9 @@
 This is a repository of the following papers:
- - [Peer-to-peer Deep Learning With Non-IID Data](https://www.sciencedirect.com/science/article/abs/pii/S0957417422021777)
- - [Multi-task peer-to-peer learning using the BERT transformer model](https://www.sciencedirect.com/science/article/abs/pii/S0167739X23004053)
- - [Evaluacija generalizacije znanja decentraliziranih agenata u okruženju heterogenih skupova podataka](https://) -> **Under Review at MIPRO conference**
- - [An Overview of Autonomous Connection Establishment Methods in Peer-to-Peer Deep Learning](https://) -> **Under Review**
- - [Sequence-to-sequence models in peer-to-peer learning: A practical application](https://) -> **Under Review**
+ - [Peer-to-peer Deep Learning With Non-IID Data](https://www.sciencedirect.com/science/article/abs/pii/S0957417422021777) - *Expert Systems with Applications*
+ - [Multi-task peer-to-peer learning using the BERT transformer model](https://www.sciencedirect.com/science/article/abs/pii/S0167739X23004053) - *Future Generation Computer Systems*
+ - [Evaluacija generalizacije znanja decentraliziranih agenata u okruženju heterogenih skupova podataka](https://) -> **[MIPRO 2024](http://www.mipro.hr/MIPRO2024/ELink.aspx) conference**
+ - [An Overview of Autonomous Connection Establishment Methods in Peer-to-Peer Deep Learning](https://ieeexplore.ieee.org/document/10633710) -> *IEEE Access*
+ - [Exploring the Viability of Sequence-to-Sequence Models for Automatic Speech Recognition in Peer-to-Peer Learning Environments](https://ieeexplore.ieee.org/document/10638622) - *2024 8th International Conference on Computer, Software and Modeling (ICCSM)*
 
 ---
 
